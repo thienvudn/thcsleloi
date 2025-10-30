@@ -1,111 +1,168 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lớp 9.1 - THCS Lê Lợi</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Lớp 9.1-THCS Lê Lợi</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <meta name="color-scheme" content="light dark">
   <style>
-    html { scroll-behavior: smooth; }
-    section { padding: 60px 20px; }
-    nav a.active { color: #1d4ed8; text-decoration: underline; }
+    body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+    .container-max { max-width: 1200px; margin: 0 auto; }
+    .left-col { min-width: 260px; }
+    .right-col { min-width: 260px; }
+    /* box shadow like ảnh */
+    .card { background: white; border-radius: .5rem; box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
   </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gray-100">
 
-  <!-- Banner -->
-  <header class="relative">
-    <img src="https://i.imgur.com/3FJZy9P.jpg" class="w-full h-60 object-cover" alt="Banner lớp học">
-    <h1 class="absolute inset-0 flex items-center justify-center text-white text-4xl font-bold bg-black/40">
-      LỚP 9.1 - THCS Lê Lợi
-    </h1>
+  <!-- Header / Banner -->
+  <header class="bg-green-600 text-white">
+    <div class="container-max mx-auto flex items-center gap-6 py-6 px-4">
+      <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center overflow-hidden">
+        <!-- logo (thay bằng logo trường nếu cần) -->
+        <img src="https://i.imgur.com/8Q7cVnF.png" alt="logo" class="w-20 h-20 object-cover">
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold">TRƯỜNG THCS LÊ LỢI</h1>
+        <div class="text-sm opacity-90">XÃ THĂNG PHÚ-TP ĐÀ NẴNG</div>
+      </div>
+      <div class="ml-auto text-right">
+        <div id="userStatus" class="text-sm">Bạn chưa đăng nhập</div>
+      </div>
+    </div>
   </header>
 
-  <!-- Menu -->
-  <nav class="flex justify-center gap-6 bg-white shadow-md py-4 sticky top-0 z-50">
-    <a href="#gioithieu" class="font-semibold hover:underline">Giới thiệu</a>
-    <a href="#thongbao" class="font-semibold hover:underline">Thông báo</a>
-    <a href="#album" class="font-semibold hover:underline">Album ảnh</a>
-    <a href="#lienhe" class="font-semibold hover:underline">Liên hệ</a>
-    <a href="#dangnhap" class="font-semibold hover:underline">Đăng nhập</a>
+  <!-- Nav -->
+  <nav class="bg-white shadow-sm sticky top-0 z-40">
+    <div class="container-max mx-auto px-4">
+      <ul class="flex gap-6 py-3 text-green-700 font-semibold">
+        <li><a href="#gioithieu" class="hover:underline">Giới thiệu</a></li>
+        <li><a href="#thongbao" class="hover:underline">Thông báo</a></li>
+        <li><a href="#album" class="hover:underline">Album ảnh</a></li>
+        <li><a href="#lienhe" class="hover:underline">Liên hệ</a></li>
+      </ul>
+    </div>
   </nav>
 
-  <!-- Giới thiệu -->
-  <section id="gioithieu" class="text-center">
-    <h2 class="text-2xl font-bold mb-3">💫 Giới thiệu lớp học</h2>
-    <p class="max-w-2xl mx-auto leading-relaxed">
-      Chào mừng bạn đến với trang chính thức của <b>Lớp 9.1 – THCS Lê Lợi</b>!
-      Đây là nơi cập nhật thông báo, chia sẻ tài liệu, hình ảnh, và những kỷ niệm đáng nhớ của chúng ta ❤️
-    </p>
-    <h3 class="text-xl font-semibold mt-8 mb-3">👩‍🎓 Thành viên lớp</h3>
-    <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 text-center bg-white shadow p-4 rounded-lg max-w-2xl mx-auto">
-      <li>Nguyễn Văn A</li>
-      <li>Trần Thị B</li>
-      <li>Lê Văn C</li>
-      <li>Phạm Thị D</li>
-    </ul>
-  </section>
+  <!-- Main layout: left (login/register), center (news), right (notices) -->
+  <main class="container-max mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-6">
 
-  <!-- Thông báo -->
-  <section id="thongbao" class="bg-white shadow-md max-w-3xl mx-auto rounded-lg">
-    <h2 class="text-2xl font-bold text-center py-4 border-b">📢 Thông báo lớp</h2>
-    <div class="p-6 space-y-4">
-      <article class="bg-gray-50 p-4 rounded shadow-sm">
-        <h3 class="text-xl font-semibold">Lịch học tuần 1/11 - 7/11</h3>
-        <p>🕓 Thứ 2: Toán - Lý - Hóa <br> 🕓 Thứ 3: Văn - Sử - Anh</p>
-        <span class="text-sm text-gray-500">Đăng ngày: 30/10/2025</span>
-      </article>
+    <!-- LEFT: Login/Register box -->
+    <aside class="left-col">
+      <div class="card p-4">
+        <h3 class="font-semibold text-green-700 mb-3">🔐 Đăng nhập / Đăng ký</h3>
 
-      <article class="bg-gray-50 p-4 rounded shadow-sm">
-        <h3 class="text-xl font-semibold">Thông báo họp lớp</h3>
-        <p>📅 8h sáng, Chủ nhật 2/11/2025<br>📍 Phòng 9.1</p>
-        <span class="text-sm text-gray-500">Đăng ngày: 29/10/2025</span>
-      </article>
-    </div>
-  </section>
+        <!-- Tabs -->
+        <div class="flex gap-2 mb-4">
+          <button id="tabLogin" class="flex-1 py-2 rounded bg-green-600 text-white">Đăng nhập</button>
+          <button id="tabRegister" class="flex-1 py-2 rounded border border-gray-200">Đăng ký</button>
+        </div>
 
-  <!-- Album ảnh -->
-  <section id="album" class="text-center bg-gray-50">
-    <h2 class="text-2xl font-bold mb-4">📸 Album ảnh lớp</h2>
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
-      <img src="https://i.imgur.com/1ZQZ1hQ.jpg" class="rounded-lg shadow" alt="Ảnh 1">
-      <img src="https://i.imgur.com/k5A1q7M.jpg" class="rounded-lg shadow" alt="Ảnh 2">
-      <img src="https://i.imgur.com/fBR3LhP.jpg" class="rounded-lg shadow" alt="Ảnh 3">
-      <img src="https://i.imgur.com/sBxTq4J.jpg" class="rounded-lg shadow" alt="Ảnh 4">
-    </div>
-  </section>
+        <!-- Login form -->
+        <div id="loginBox">
+          <input id="loginEmail" type="email" placeholder="Email" class="w-full border p-2 rounded mb-2" />
+          <input id="loginPass" type="password" placeholder="Mật khẩu" class="w-full border p-2 rounded mb-2" />
+          <label class="inline-flex items-center gap-2 mb-3">
+            <input id="rememberMe" type="checkbox" class="w-4 h-4" />
+            <span class="text-sm">Lưu đăng nhập</span>
+          </label>
+          <button onclick="doLogin()" class="w-full bg-green-600 text-white py-2 rounded">Đăng nhập</button>
+          <button onclick="showReset()" class="w-full mt-2 text-sm text-gray-600 underline">Quên mật khẩu?</button>
+        </div>
 
-  <!-- Liên hệ -->
-  <section id="lienhe" class="bg-white text-center">
-    <h2 class="text-2xl font-bold mb-4">📞 Liên hệ lớp 12A1</h2>
-    <p class="mb-4">Gửi lời nhắn hoặc góp ý cho lớp qua form bên dưới:</p>
-    <!-- Dán link Google Form của bạn vào đây -->
-    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf12345/viewform?embedded=true"
-      width="100%" height="600" frameborder="0" marginheight="0" marginwidth="0"
-      class="max-w-3xl mx-auto">Đang tải…</iframe>
-  </section>
+        <!-- Register form -->
+        <div id="registerBox" class="hidden">
+          <input id="regName" type="text" placeholder="Họ và tên" class="w-full border p-2 rounded mb-2" />
+          <input id="regEmail" type="email" placeholder="Email" class="w-full border p-2 rounded mb-2" />
+          <input id="regPass" type="password" placeholder="Mật khẩu (6+ ký tự)" class="w-full border p-2 rounded mb-2" />
+          <button onclick="doRegister()" class="w-full bg-green-600 text-white py-2 rounded">Tạo tài khoản</button>
+        </div>
 
-  <!-- Đăng nhập -->
-  <section id="dangnhap" class="bg-gray-50 text-center">
-    <h2 class="text-2xl font-bold mb-4">🔐 Đăng nhập lớp 9.1</h2>
-    <div class="bg-white shadow-md p-6 rounded-lg max-w-sm mx-auto">
-      <input id="email" type="email" placeholder="Email" class="border w-full p-2 mb-3 rounded">
-      <input id="password" type="password" placeholder="Mật khẩu" class="border w-full p-2 mb-3 rounded">
-      <button onclick="login()" class="bg-blue-600 text-white w-full py-2 rounded">Đăng nhập</button>
-    </div>
-  </section>
+        <!-- When logged in -->
+        <div id="loggedBox" class="hidden">
+          <div class="p-3 bg-gray-50 rounded mb-3 text-sm" id="loggedInfo">Xin chào <b>...</b></div>
+          <button onclick="doLogout()" class="w-full bg-red-500 text-white py-2 rounded">Đăng xuất</button>
+        </div>
+
+      </div>
+
+      <!-- Optional: quick links -->
+      <div class="card p-4 mt-4">
+        <h4 class="font-semibold text-green-700 mb-2">Liên kết nhanh</h4>
+        <ul class="text-sm space-y-2">
+          <li><a href="#" class="text-blue-600 hover:underline">Thời khóa biểu</a></li>
+          <li><a href="#" class="text-blue-600 hover:underline">Tài liệu môn Toán</a></li>
+          <li><a href="#" class="text-blue-600 hover:underline">Form góp ý</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- CENTER: News / Posts -->
+    <section id="thongbao" class="card p-4">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-green-700">📢 Tin tức - Thông báo</h2>
+        <!-- show add form button only for logged in users -->
+        <div id="addPostArea" class="hidden">
+          <button onclick="toggleAddPost()" class="bg-green-600 text-white py-2 px-3 rounded">+ Thêm tin</button>
+        </div>
+      </div>
+
+      <!-- Add post form -->
+      <div id="addPostForm" class="hidden mb-4">
+        <input id="postTitle" placeholder="Tiêu đề" class="w-full border p-2 rounded mb-2"/>
+        <textarea id="postContent" placeholder="Nội dung" class="w-full border p-2 rounded mb-2"></textarea>
+        <button onclick="addPost()" class="bg-green-600 text-white py-2 px-4 rounded">Đăng</button>
+        <button onclick="toggleAddPost(true)" class="ml-2 text-sm text-gray-600">Hủy</button>
+      </div>
+
+      <!-- News list -->
+      <div id="newsList" class="space-y-4">
+        <!-- dynamic news items will appear here -->
+        <div class="text-sm text-gray-500">Đang tải tin...</div>
+      </div>
+    </section>
+
+    <!-- RIGHT: Notices -->
+    <aside class="right-col">
+      <div class="card p-4">
+        <h3 class="font-semibold text-green-700 mb-3">Thông báo nhanh</h3>
+        <ul id="noticeList" class="text-sm space-y-2">
+          <li>✔ Công bố lịch thi học kỳ</li>
+          <li>✔ Họp phụ huynh lớp</li>
+          <li>✔ Nộp bài tập cuối tuần</li>
+        </ul>
+      </div>
+
+      <div class="card p-4 mt-4">
+        <h4 class="font-semibold text-green-700 mb-2">Album</h4>
+        <img src="https://i.imgur.com/1ZQZ1hQ.jpg" alt="ảnh" class="w-full rounded mb-2"/>
+        <a href="#album" class="text-blue-600 hover:underline text-sm">Xem thêm album →</a>
+      </div>
+    </aside>
+
+  </main>
 
   <!-- Footer -->
-  <footer class="text-center text-sm text-gray-600 py-6 bg-white mt-8">
-    © 2025 Lớp 9.1 - THCS Lê Lợi. Thiết kế bởi ❤️ Thiên Vũ
+  <footer class="container-max mx-auto px-4 py-6 text-center text-sm text-gray-600">
+    © 2025 Lớp 9.1-THCS Lê Lợi — Thiết kế bởi THIÊN VŨ
   </footer>
 
-  <!-- Firebase Script -->
+  <!-- Firebase + logic -->
   <script type="module">
+    // ----- IMPORT FIREBASE (module style) -----
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getAuth, createUserWithEmailAndPassword,
+      signInWithEmailAndPassword, signOut,
+      onAuthStateChanged, sendPasswordResetEmail
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore, collection, addDoc, getDocs,
+      query, orderBy, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    // ====== REPLACE with your Firebase config ======
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
@@ -114,20 +171,167 @@
       messagingSenderId: "YOUR_SENDER_ID",
       appId: "YOUR_APP_ID"
     };
+    // ===============================================
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    async function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+    // UI refs
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const loginBox = document.getElementById('loginBox');
+    const registerBox = document.getElementById('registerBox');
+    const loggedBox = document.getElementById('loggedBox');
+    const loggedInfo = document.getElementById('loggedInfo');
+    const userStatus = document.getElementById('userStatus');
+    const addPostArea = document.getElementById('addPostArea');
+    const addPostForm = document.getElementById('addPostForm');
+    const newsList = document.getElementById('newsList');
+
+    // Tab handlers
+    tabLogin.addEventListener('click', ()=> {
+      tabLogin.classList.add('bg-green-600','text-white'); tabLogin.classList.remove('border');
+      tabRegister.classList.remove('bg-green-600','text-white'); tabRegister.classList.add('border');
+      loginBox.classList.remove('hidden'); registerBox.classList.add('hidden');
+    });
+    tabRegister.addEventListener('click', ()=> {
+      tabRegister.classList.add('bg-green-600','text-white'); tabRegister.classList.remove('border');
+      tabLogin.classList.remove('bg-green-600','text-white'); tabLogin.classList.add('border');
+      registerBox.classList.remove('hidden'); loginBox.classList.add('hidden');
+    });
+
+    // Auth actions
+    async function doRegister(){
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const pass = document.getElementById('regPass').value;
+      if(!name || !email || pass.length < 6){ alert('Nhập đủ thông tin, mật khẩu >=6 ký tự'); return; }
       try {
-        await signInWithEmailAndPassword(auth, email, password);
-        alert("Đăng nhập thành công!");
-      } catch (error) {
-        alert("Sai tài khoản hoặc mật khẩu!");
+        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+        // Optionally store displayName to Firestore or update profile (omitted here)
+        alert('Tạo tài khoản thành công!'); 
+      } catch(e){
+        console.error(e); alert('Lỗi tạo tài khoản: ' + (e.message||e));
       }
     }
+
+    async function doLogin(){
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        const remember = document.getElementById('rememberMe').checked;
+        // "remember" control requires setting persistence — omitted for brevity
+        alert('Đăng nhập thành công!');
+      } catch(e){
+        console.error(e); alert('Đăng nhập thất bại: ' + (e.message||e));
+      }
+    }
+
+    async function doLogout(){
+      try {
+        await signOut(auth);
+        alert('Bạn đã đăng xuất.');
+      } catch(e){
+        console.error(e);
+      }
+    }
+
+    function showReset(){
+      const email = prompt('Nhập email để gửi link đặt lại mật khẩu:');
+      if(!email) return;
+      sendPasswordResetEmail(auth, email).then(()=>{
+        alert('Đã gửi email đặt lại mật khẩu (nếu email tồn tại).');
+      }).catch(e=>{
+        alert('Lỗi: ' + (e.message||e));
+      });
+    }
+
+    // Listen auth state
+    onAuthStateChanged(auth, user => {
+      if(user){
+        // logged in
+        userStatus.innerText = 'Đã đăng nhập: ' + (user.email || user.displayName || 'Người dùng');
+        loginBox.classList.add('hidden');
+        registerBox.classList.add('hidden');
+        loggedBox.classList.remove('hidden');
+        loggedInfo.innerHTML = `Xin chào <b>${user.email}</b>`;
+        addPostArea.classList.remove('hidden');
+      } else {
+        userStatus.innerText = 'Bạn chưa đăng nhập';
+        loginBox.classList.remove('hidden');
+        registerBox.classList.add('hidden');
+        loggedBox.classList.add('hidden');
+        addPostArea.classList.add('hidden');
+      }
+    });
+
+    // -------- Firestore: load news --------
+    async function loadNews(){
+      newsList.innerHTML = '<div class="text-sm text-gray-500">Đang tải tin...</div>';
+      try {
+        const q = query(collection(db, 'news'), orderBy('createdAt','desc'));
+        const snap = await getDocs(q);
+        if(snap.empty) {
+          newsList.innerHTML = '<div class="text-sm text-gray-600">Chưa có tin nào.</div>';
+          return;
+        }
+        let html = '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          const title = d.title || 'Không có tiêu đề';
+          const content = d.content || '';
+          const date = d.createdAt && d.createdAt.toDate ? d.createdAt.toDate().toLocaleString() : '';
+          html += `<article class="p-4 border rounded bg-white">
+            <h3 class="font-semibold">${escapeHtml(title)}</h3>
+            <div class="text-sm text-gray-700 mt-2">${escapeHtml(content)}</div>
+            <div class="text-xs text-gray-400 mt-2">${date}</div>
+          </article>`;
+        });
+        newsList.innerHTML = html;
+      } catch(e){
+        console.error(e);
+        newsList.innerHTML = '<div class="text-sm text-red-500">Lỗi khi tải tin.</div>';
+      }
+    }
+
+    // Add post (only for logged in)
+    function toggleAddPost(forceHide=false){
+      if(forceHide) { addPostForm.classList.add('hidden'); return; }
+      addPostForm.classList.toggle('hidden');
+    }
+
+    async function addPost(){
+      const title = document.getElementById('postTitle').value.trim();
+      const content = document.getElementById('postContent').value.trim();
+      if(!title || !content){ alert('Nhập tiêu đề & nội dung'); return; }
+      try {
+        await addDoc(collection(db,'news'), {
+          title, content, createdAt: serverTimestamp()
+        });
+        alert('Đã đăng tin.');
+        document.getElementById('postTitle').value = '';
+        document.getElementById('postContent').value = '';
+        addPostForm.classList.add('hidden');
+        await loadNews();
+      } catch(e){
+        console.error(e);
+        alert('Lỗi khi đăng tin: ' + (e.message || e));
+      }
+    }
+
+    // small helper
+    function escapeHtml(s){
+      if(!s) return '';
+      return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+    }
+
+    // initial load
+    loadNews();
+
+    // Reload news periodically (optional)
+    setInterval(loadNews, 60*1000);
   </script>
 
 </body>
