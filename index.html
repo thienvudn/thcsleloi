@@ -8,17 +8,15 @@
   <style>
     body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
     .container-max { max-width: 1200px; margin: 0 auto; }
-    .left-col { min-width: 240px; }
-    .right-col { min-width: 240px; }
     .card { background: white; border-radius: .5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     input, textarea, button { font-size: 14px; }
   </style>
 </head>
 <body class="bg-gray-100">
 
-  <!-- Header / Banner -->
+  <!-- Banner -->
   <header class="relative">
-    <img src="unnamed (2).jpg" alt="Banner" class="w-full h-40 object-cover">
+    <img src="https://i.ibb.co/27nXMcjB/unnamed-2.jpg" alt="Banner" class="w-full h-40 object-cover">
     <div class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-30 flex items-center justify-center">
       <div class="text-center text-white">
         <h1 class="text-2xl font-bold">TRƯỜNG THCS LÊ LỢI</h1>
@@ -27,7 +25,7 @@
     </div>
   </header>
 
-  <!-- Nav -->
+  <!-- Menu -->
   <nav class="bg-green-600 text-white shadow-sm sticky top-0 z-40">
     <div class="container-max mx-auto px-4">
       <ul class="flex gap-6 py-3 font-semibold text-sm">
@@ -42,8 +40,8 @@
   <!-- Main -->
   <main class="container-max mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-[260px_1fr_240px] gap-6">
 
-    <!-- LEFT: Đăng nhập -->
-    <aside class="left-col">
+    <!-- Cột trái: Đăng nhập -->
+    <aside>
       <div class="card p-3">
         <h3 class="font-semibold text-green-700 mb-2 text-sm">🔐 Đăng nhập</h3>
         <input id="loginEmail" type="email" placeholder="Email" class="w-full border p-1.5 rounded mb-1" />
@@ -74,7 +72,7 @@
       </div>
     </aside>
 
-    <!-- CENTER: Tin tức -->
+    <!-- Giữa: Thông báo -->
     <section id="thongbao" class="card p-4">
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-lg font-bold text-green-700">📢 Tin tức - Thông báo</h2>
@@ -95,8 +93,8 @@
       </div>
     </section>
 
-    <!-- RIGHT -->
-    <aside class="right-col">
+    <!-- Cột phải -->
+    <aside>
       <div class="card p-3 text-sm">
         <h3 class="font-semibold text-green-700 mb-2">Thông báo nhanh</h3>
         <ul class="space-y-1">
@@ -118,16 +116,10 @@
     © 2025 Lớp 9.1 - THCS Lê Lợi — Thiết kế bởi THIÊN VŨ
   </footer>
 
-  <!-- Firebase -->
+  <!-- Firebase (mẫu) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-      signOut, sendPasswordResetEmail, onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import {
-      getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
@@ -140,13 +132,12 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
 
     async function doLogin(){
       const email=document.getElementById("loginEmail").value.trim();
       const pass=document.getElementById("loginPass").value;
       try{await signInWithEmailAndPassword(auth,email,pass);alert("Đăng nhập thành công!");}
-      catch(e){alert("Đăng nhập thất bại: "+e.message);}
+      catch(e){alert("Lỗi: "+e.message);}
     }
 
     async function showRegister(){
@@ -165,14 +156,6 @@
     }
 
     async function doLogout(){await signOut(auth);alert("Đã đăng xuất!");}
-
-    onAuthStateChanged(auth,user=>{
-      const loggedBox=document.getElementById("loggedBox");
-      if(user){
-        loggedBox.classList.remove("hidden");
-        document.getElementById("loggedInfo").innerHTML="Xin chào <b>"+user.email+"</b>";
-      } else loggedBox.classList.add("hidden");
-    });
   </script>
 
 </body>
