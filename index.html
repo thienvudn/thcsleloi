@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lớp 9.1 - THCS Lê Lợi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="color-scheme" content="light dark">
+  <style>
+    html { scroll-behavior: smooth; }
+    section { padding: 60px 20px; }
+    nav a.active { color: #1d4ed8; text-decoration: underline; }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Banner -->
+  <header class="relative">
+    <img src="https://i.imgur.com/3FJZy9P.jpg" class="w-full h-60 object-cover" alt="Banner lớp học">
+    <h1 class="absolute inset-0 flex items-center justify-center text-white text-4xl font-bold bg-black/40">
+      LỚP 9.1 - THCS Lê Lợi
+    </h1>
+  </header>
+
+  <!-- Menu -->
+  <nav class="flex justify-center gap-6 bg-white shadow-md py-4 sticky top-0 z-50">
+    <a href="#gioithieu" class="font-semibold hover:underline">Giới thiệu</a>
+    <a href="#thongbao" class="font-semibold hover:underline">Thông báo</a>
+    <a href="#album" class="font-semibold hover:underline">Album ảnh</a>
+    <a href="#lienhe" class="font-semibold hover:underline">Liên hệ</a>
+    <a href="#dangnhap" class="font-semibold hover:underline">Đăng nhập</a>
+  </nav>
+
+  <!-- Giới thiệu -->
+  <section id="gioithieu" class="text-center">
+    <h2 class="text-2xl font-bold mb-3">💫 Giới thiệu lớp học</h2>
+    <p class="max-w-2xl mx-auto leading-relaxed">
+      Chào mừng bạn đến với trang chính thức của <b>Lớp 9.1 – THCS Lê Lợi</b>!
+      Đây là nơi cập nhật thông báo, chia sẻ tài liệu, hình ảnh, và những kỷ niệm đáng nhớ của chúng ta ❤️
+    </p>
+    <h3 class="text-xl font-semibold mt-8 mb-3">👩‍🎓 Thành viên lớp</h3>
+    <ul class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 text-center bg-white shadow p-4 rounded-lg max-w-2xl mx-auto">
+      <li>Nguyễn Văn A</li>
+      <li>Trần Thị B</li>
+      <li>Lê Văn C</li>
+      <li>Phạm Thị D</li>
+    </ul>
+  </section>
+
+  <!-- Thông báo -->
+  <section id="thongbao" class="bg-white shadow-md max-w-3xl mx-auto rounded-lg">
+    <h2 class="text-2xl font-bold text-center py-4 border-b">📢 Thông báo lớp</h2>
+    <div class="p-6 space-y-4">
+      <article class="bg-gray-50 p-4 rounded shadow-sm">
+        <h3 class="text-xl font-semibold">Lịch học tuần 1/11 - 7/11</h3>
+        <p>🕓 Thứ 2: Toán - Lý - Hóa <br> 🕓 Thứ 3: Văn - Sử - Anh</p>
+        <span class="text-sm text-gray-500">Đăng ngày: 30/10/2025</span>
+      </article>
+
+      <article class="bg-gray-50 p-4 rounded shadow-sm">
+        <h3 class="text-xl font-semibold">Thông báo họp lớp</h3>
+        <p>📅 8h sáng, Chủ nhật 2/11/2025<br>📍 Phòng 9.1</p>
+        <span class="text-sm text-gray-500">Đăng ngày: 29/10/2025</span>
+      </article>
+    </div>
+  </section>
+
+  <!-- Album ảnh -->
+  <section id="album" class="text-center bg-gray-50">
+    <h2 class="text-2xl font-bold mb-4">📸 Album ảnh lớp</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
+      <img src="https://i.imgur.com/1ZQZ1hQ.jpg" class="rounded-lg shadow" alt="Ảnh 1">
+      <img src="https://i.imgur.com/k5A1q7M.jpg" class="rounded-lg shadow" alt="Ảnh 2">
+      <img src="https://i.imgur.com/fBR3LhP.jpg" class="rounded-lg shadow" alt="Ảnh 3">
+      <img src="https://i.imgur.com/sBxTq4J.jpg" class="rounded-lg shadow" alt="Ảnh 4">
+    </div>
+  </section>
+
+  <!-- Liên hệ -->
+  <section id="lienhe" class="bg-white text-center">
+    <h2 class="text-2xl font-bold mb-4">📞 Liên hệ lớp 12A1</h2>
+    <p class="mb-4">Gửi lời nhắn hoặc góp ý cho lớp qua form bên dưới:</p>
+    <!-- Dán link Google Form của bạn vào đây -->
+    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf12345/viewform?embedded=true"
+      width="100%" height="600" frameborder="0" marginheight="0" marginwidth="0"
+      class="max-w-3xl mx-auto">Đang tải…</iframe>
+  </section>
+
+  <!-- Đăng nhập -->
+  <section id="dangnhap" class="bg-gray-50 text-center">
+    <h2 class="text-2xl font-bold mb-4">🔐 Đăng nhập lớp 9.1</h2>
+    <div class="bg-white shadow-md p-6 rounded-lg max-w-sm mx-auto">
+      <input id="email" type="email" placeholder="Email" class="border w-full p-2 mb-3 rounded">
+      <input id="password" type="password" placeholder="Mật khẩu" class="border w-full p-2 mb-3 rounded">
+      <button onclick="login()" class="bg-blue-600 text-white w-full py-2 rounded">Đăng nhập</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center text-sm text-gray-600 py-6 bg-white mt-8">
+    © 2025 Lớp 9.1 - THCS Lê Lợi. Thiết kế bởi ❤️ Thiên Vũ
+  </footer>
+
+  <!-- Firebase Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        alert("Đăng nhập thành công!");
+      } catch (error) {
+        alert("Sai tài khoản hoặc mật khẩu!");
+      }
+    }
+  </script>
+
+</body>
+</html>
