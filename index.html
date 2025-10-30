@@ -8,9 +8,10 @@
   <style>
     body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
     .container-max { max-width: 1200px; margin: 0 auto; }
-    .left-col { min-width: 260px; }
-    .right-col { min-width: 260px; }
-    .card { background: white; border-radius: .5rem; box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+    .left-col { min-width: 240px; }
+    .right-col { min-width: 240px; }
+    .card { background: white; border-radius: .5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    input, textarea, button { font-size: 14px; }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -39,35 +40,33 @@
   </nav>
 
   <!-- Main -->
-  <main class="container-max mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-6">
+  <main class="container-max mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-[260px_1fr_240px] gap-6">
 
     <!-- LEFT: Đăng nhập -->
     <aside class="left-col">
-      <div class="card p-4">
-        <h3 class="font-semibold text-green-700 mb-3">🔐 Đăng nhập</h3>
-        <input id="loginEmail" type="email" placeholder="Email" class="w-full border p-2 rounded mb-2" />
-        <input id="loginPass" type="password" placeholder="Mật khẩu" class="w-full border p-2 rounded mb-2" />
-        <label class="inline-flex items-center gap-2 mb-3">
-          <input id="rememberMe" type="checkbox" class="w-4 h-4" />
-          <span class="text-sm">Lưu đăng nhập</span>
+      <div class="card p-3">
+        <h3 class="font-semibold text-green-700 mb-2 text-sm">🔐 Đăng nhập</h3>
+        <input id="loginEmail" type="email" placeholder="Email" class="w-full border p-1.5 rounded mb-1" />
+        <input id="loginPass" type="password" placeholder="Mật khẩu" class="w-full border p-1.5 rounded mb-2" />
+        <label class="inline-flex items-center gap-2 mb-2 text-sm">
+          <input id="rememberMe" type="checkbox" class="w-3.5 h-3.5" />
+          <span>Lưu đăng nhập</span>
         </label>
-        <button onclick="doLogin()" class="w-full bg-green-600 text-white py-2 rounded">Đăng nhập</button>
-        <div class="flex justify-between text-sm mt-2">
+        <button onclick="doLogin()" class="w-full bg-green-600 text-white py-1.5 rounded text-sm">Đăng nhập</button>
+        <div class="flex justify-between text-xs mt-2">
           <button onclick="showReset()" class="text-gray-600 underline">Quên mật khẩu?</button>
           <button onclick="showRegister()" class="text-gray-600 underline">Đăng ký tài khoản mới</button>
         </div>
       </div>
 
-      <!-- Khi đã đăng nhập -->
-      <div id="loggedBox" class="card p-4 mt-4 hidden">
-        <div class="p-3 bg-gray-50 rounded mb-3 text-sm" id="loggedInfo">Xin chào <b>...</b></div>
-        <button onclick="doLogout()" class="w-full bg-red-500 text-white py-2 rounded">Đăng xuất</button>
+      <div id="loggedBox" class="card p-3 mt-3 hidden text-sm">
+        <div class="p-2 bg-gray-50 rounded mb-2" id="loggedInfo">Xin chào <b>...</b></div>
+        <button onclick="doLogout()" class="w-full bg-red-500 text-white py-1.5 rounded">Đăng xuất</button>
       </div>
 
-      <!-- Liên kết nhanh -->
-      <div class="card p-4 mt-4">
+      <div class="card p-3 mt-3 text-sm">
         <h4 class="font-semibold text-green-700 mb-2">Liên kết nhanh</h4>
-        <ul class="text-sm space-y-2">
+        <ul class="space-y-1">
           <li><a href="#" class="text-blue-600 hover:underline">Thời khóa biểu</a></li>
           <li><a href="#" class="text-blue-600 hover:underline">Tài liệu Toán</a></li>
           <li><a href="#" class="text-blue-600 hover:underline">Form góp ý</a></li>
@@ -77,51 +76,49 @@
 
     <!-- CENTER: Tin tức -->
     <section id="thongbao" class="card p-4">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-bold text-green-700">📢 Tin tức - Thông báo</h2>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-lg font-bold text-green-700">📢 Tin tức - Thông báo</h2>
         <div id="addPostArea" class="hidden">
-          <button onclick="toggleAddPost()" class="bg-green-600 text-white py-2 px-3 rounded">+ Thêm tin</button>
+          <button onclick="toggleAddPost()" class="bg-green-600 text-white py-1.5 px-3 rounded text-sm">+ Thêm tin</button>
         </div>
       </div>
 
-      <!-- Thêm bài -->
-      <div id="addPostForm" class="hidden mb-4">
-        <input id="postTitle" placeholder="Tiêu đề" class="w-full border p-2 rounded mb-2"/>
-        <textarea id="postContent" placeholder="Nội dung" class="w-full border p-2 rounded mb-2"></textarea>
-        <button onclick="addPost()" class="bg-green-600 text-white py-2 px-4 rounded">Đăng</button>
-        <button onclick="toggleAddPost(true)" class="ml-2 text-sm text-gray-600">Hủy</button>
+      <div id="addPostForm" class="hidden mb-3">
+        <input id="postTitle" placeholder="Tiêu đề" class="w-full border p-1.5 rounded mb-1"/>
+        <textarea id="postContent" placeholder="Nội dung" class="w-full border p-1.5 rounded mb-2"></textarea>
+        <button onclick="addPost()" class="bg-green-600 text-white py-1.5 px-4 rounded text-sm">Đăng</button>
+        <button onclick="toggleAddPost(true)" class="ml-2 text-xs text-gray-600">Hủy</button>
       </div>
 
-      <div id="newsList" class="space-y-4">
-        <div class="text-sm text-gray-500">Đang tải tin...</div>
+      <div id="newsList" class="space-y-3 text-sm">
+        <div class="text-gray-500">Đang tải tin...</div>
       </div>
     </section>
 
     <!-- RIGHT -->
     <aside class="right-col">
-      <div class="card p-4">
-        <h3 class="font-semibold text-green-700 mb-3">Thông báo nhanh</h3>
-        <ul class="text-sm space-y-2">
+      <div class="card p-3 text-sm">
+        <h3 class="font-semibold text-green-700 mb-2">Thông báo nhanh</h3>
+        <ul class="space-y-1">
           <li>✔ Công bố lịch thi học kỳ</li>
           <li>✔ Họp phụ huynh lớp</li>
           <li>✔ Nộp bài tập cuối tuần</li>
         </ul>
       </div>
 
-      <div class="card p-4 mt-4">
+      <div class="card p-3 mt-3 text-sm">
         <h4 class="font-semibold text-green-700 mb-2">Album</h4>
         <img src="https://i.imgur.com/1ZQZ1hQ.jpg" alt="ảnh" class="w-full rounded mb-2"/>
-        <a href="#album" class="text-blue-600 hover:underline text-sm">Xem thêm album →</a>
+        <a href="#album" class="text-blue-600 hover:underline text-xs">Xem thêm album →</a>
       </div>
     </aside>
   </main>
 
-  <!-- Footer -->
-  <footer class="container-max mx-auto px-4 py-6 text-center text-sm text-gray-600">
+  <footer class="container-max mx-auto px-4 py-4 text-center text-xs text-gray-600">
     © 2025 Lớp 9.1 - THCS Lê Lợi — Thiết kế bởi THIÊN VŨ
   </footer>
 
-  <!-- Firebase + Logic -->
+  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
@@ -146,41 +143,35 @@
     const db = getFirestore(app);
 
     async function doLogin(){
-      const email = document.getElementById('loginEmail').value.trim();
-      const pass = document.getElementById('loginPass').value;
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-        alert('Đăng nhập thành công!');
-      } catch(e){ alert('Đăng nhập thất bại: ' + e.message); }
+      const email=document.getElementById("loginEmail").value.trim();
+      const pass=document.getElementById("loginPass").value;
+      try{await signInWithEmailAndPassword(auth,email,pass);alert("Đăng nhập thành công!");}
+      catch(e){alert("Đăng nhập thất bại: "+e.message);}
     }
 
     async function showRegister(){
-      const name = prompt("Họ và tên:");
-      const email = prompt("Email:");
-      const pass = prompt("Mật khẩu (6 ký tự trở lên):");
-      if(!name || !email || pass.length<6) return alert("Nhập đủ thông tin!");
-      try {
-        await createUserWithEmailAndPassword(auth, email, pass);
-        alert("Đăng ký thành công!");
-      } catch(e){ alert("Lỗi: " + e.message); }
+      const name=prompt("Họ và tên:");
+      const email=prompt("Email:");
+      const pass=prompt("Mật khẩu (6 ký tự trở lên):");
+      if(!name||!email||pass.length<6)return alert("Nhập đủ thông tin!");
+      try{await createUserWithEmailAndPassword(auth,email,pass);alert("Đăng ký thành công!");}
+      catch(e){alert("Lỗi: "+e.message);}
     }
 
     function showReset(){
-      const email = prompt("Nhập email để khôi phục:");
-      if(!email) return;
-      sendPasswordResetEmail(auth, email).then(()=>alert("Đã gửi link khôi phục mật khẩu!"));
+      const email=prompt("Nhập email để khôi phục:");
+      if(!email)return;
+      sendPasswordResetEmail(auth,email).then(()=>alert("Đã gửi link khôi phục mật khẩu!"));
     }
 
-    async function doLogout(){ await signOut(auth); alert("Đã đăng xuất!"); }
+    async function doLogout(){await signOut(auth);alert("Đã đăng xuất!");}
 
-    onAuthStateChanged(auth, user=>{
+    onAuthStateChanged(auth,user=>{
       const loggedBox=document.getElementById("loggedBox");
       if(user){
         loggedBox.classList.remove("hidden");
         document.getElementById("loggedInfo").innerHTML="Xin chào <b>"+user.email+"</b>";
-      } else {
-        loggedBox.classList.add("hidden");
-      }
+      } else loggedBox.classList.add("hidden");
     });
   </script>
 
