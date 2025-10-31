@@ -99,9 +99,9 @@
       <!-- Form góp ý -->
       <div id="gopy" class="card p-4">
         <h2 class="text-lg font-bold text-green-700 mb-3">💬 Form góp ý</h2>
-        <p class="text-sm text-gray-600 mb-2">Học sinh có thể gửi ý kiến, phản hồi hoặc đóng góp cho lớp và trường. Nội dung sẽ hiển thị công khai dưới đây.</p>
+        <p class="text-sm text-gray-600 mb-2">Các bạn có thể gửi ý kiến, phản hồi hoặc đóng góp cho lớp. Nội dung sẽ hiển thị công khai dưới đây.</p>
         <textarea id="gopyText" rows="3" placeholder="Nhập nội dung góp ý..." class="w-full border rounded p-2 text-sm"></textarea>
-        <button onclick="sendGopy()" class="mt-2 bg-green-600 text-white px-4 py-1.5 rounded text-sm">Gửi góp ý</button>
+        <button onclick="sendGopy()" id="btnGopy" class="mt-2 bg-green-600 text-white px-4 py-1.5 rounded text-sm">Gửi góp ý</button>
         <div id="gopyList" class="mt-4 text-sm space-y-2"></div>
       </div>
 
@@ -124,11 +124,11 @@
         </ul>
       </div>
 
-      <div class="card p-3 mt-3 text-sm">
+      <div class="card p-3 mt-3 text-sm" id="lienhe">
         <h4 class="font-semibold text-green-700 mb-2">Liên hệ</h4>
-        <p>Giáo viên chủ nhiệm: <b>Cô Trân</b></p>
-        <p>Email: <a href="mailto:contact@leloi.edu.vn" class="text-blue-600 hover:underline">contact@leloi.edu.vn</a></p>
-        <p>SĐT: 0905.xxx.xxx</p>
+        <p>Admin: <b>Võ Thiên Vũ</b></p>
+        <p>Email: <a href="mailto:contact@thcsleloi.vn" class="text-blue-600 hover:underline">contact@thcsleloi.vn</a></p>
+        <p>SĐT: 0868 670 473</p>
       </div>
     </aside>
   </main>
@@ -195,12 +195,14 @@
         loggedBox.classList.remove("hidden");
         loggedInfo.innerHTML = `Xin chào <b>${snap.data().name}</b>`;
         localStorage.setItem("userName", snap.data().name);
+        localStorage.setItem("userUID", userCred.user.uid);
       } catch (e) { alert("Lỗi: " + e.message); }
     };
 
     window.doLogout = async function() {
       await signOut(auth);
       localStorage.removeItem("userName");
+      localStorage.removeItem("userUID");
       alert("Đã đăng xuất!");
       loggedBox.classList.add("hidden");
       loginBox.classList.remove("hidden");
@@ -216,10 +218,20 @@
     // === Form góp ý ===
     window.sendGopy = async function() {
       const text = gopyText.value.trim();
-      const name = localStorage.getItem("userName") || "Ẩn danh";
-      if (!text) return alert("Vui lòng nhập nội dung góp ý!");
+      const name = localStorage.getItem("userName");
+      const uid = localStorage.getItem("userUID");
+
+      if (!uid || !name) {
+        alert("Vui lòng đăng nhập để gửi góp ý!");
+        return;
+      }
+      if (!text) {
+        alert("Vui lòng nhập nội dung góp ý!");
+        return;
+      }
+
       await addDoc(collection(db, "gopy"), {
-        name, text, time: serverTimestamp()
+        uid, name, text, time: serverTimestamp()
       });
       gopyText.value = "";
     };
@@ -231,7 +243,11 @@
       snap.forEach(doc => {
         const d = doc.data();
         const time = d.time ? new Date(d.time.seconds * 1000).toLocaleString("vi-VN") : "";
-        gopyList.innerHTML += `<div class='p-2 border rounded'><b>${d.name}</b>: ${d.text}<div class='text-xs text-gray-500 mt-1'>${time}</div></div>`;
+        gopyList.innerHTML += `
+          <div class='p-2 border rounded bg-gray-50'>
+            <b class="text-green-700">${d.name}</b>: ${d.text}
+            <div class='text-xs text-gray-500 mt-1'>${time}</div>
+          </div>`;
       });
     });
 
