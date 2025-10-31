@@ -8,57 +8,26 @@
   <!-- TailwindCSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Phong cách tổng thể -->
   <style>
     body {
       font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
       background-color: #f3f4f6;
     }
-
     .container-max { max-width: 1200px; margin: 0 auto; }
-
-    .card {
-      background: white;
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-
-    .banner-text {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: all 1s ease;
-    }
-
-    .banner-loaded .banner-text {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
+    .card { background: white; border-radius: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .banner-text { opacity: 0; transform: translateY(30px); transition: all 1s ease; }
+    .banner-loaded .banner-text { opacity: 1; transform: translateY(0); }
     .zalo-button {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 9999;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background-color: #0084FF;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-      transition: all 0.3s ease;
-      cursor: pointer;
+      position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+      width: 60px; height: 60px; border-radius: 50%;
+      background-color: #0084FF; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25); transition: all 0.3s ease; cursor: pointer;
     }
-
-    .zalo-button:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
-    }
-
-    .zalo-button img {
-      width: 35px;
-      height: 35px;
+    .zalo-button:hover { transform: scale(1.1); box-shadow: 0 6px 14px rgba(0,0,0,0.3); }
+    .zalo-button img { width: 35px; height: 35px; }
+    .modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: none; align-items: center; justify-content: center; z-index: 10000;
     }
   </style>
 </head>
@@ -66,8 +35,8 @@
 
   <!-- ======== BANNER ======== -->
   <header class="relative overflow-hidden">
-    <img src="https://i.ibb.co/Vctvnb5J/Th-m-n-i-dung-v-n-b-n-1.png" 
-         alt="Banner lớp 9.1" 
+    <img src="https://i.ibb.co/Vctvnb5J/Th-m-n-i-dung-v-n-b-n-1.png"
+         alt="Banner lớp 9.1"
          class="w-full h-40 md:h-52 object-cover brightness-75">
     <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
       <div class="banner-text text-center text-white">
@@ -86,38 +55,35 @@
         <li><a href="#album" class="hover:underline">Album ảnh</a></li>
         <li><a href="#gopy" class="hover:underline">Form góp ý</a></li>
         <li><a href="#lienhe" class="hover:underline">Liên hệ</a></li>
+        <li id="capnhatMenu" class="hidden"><a href="#" onclick="openUpdateModal()" class="hover:underline">Cập nhật thông tin</a></li>
       </ul>
     </div>
   </nav>
 
-  <!-- ======== MAIN CONTENT ======== -->
+  <!-- ======== MAIN ======== -->
   <main class="container-max mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-[260px_1fr_240px] gap-6">
 
     <!-- ==== CỘT TRÁI ==== -->
     <aside>
-      <!-- Hộp đăng nhập -->
+      <!-- Đăng nhập -->
       <div id="loginBox" class="card p-3">
         <h3 class="font-semibold text-green-700 mb-2 text-sm">🔐 Đăng nhập</h3>
         <input id="loginEmail" type="email" placeholder="Email" class="w-full border p-1.5 rounded mb-1" />
         <input id="loginPass" type="password" placeholder="Mật khẩu" class="w-full border p-1.5 rounded mb-2" />
-        <label class="flex items-center text-xs text-gray-600 mb-2">
-          <input type="checkbox" id="rememberMe" class="mr-1"> Lưu thông tin đăng nhập
-        </label>
         <button onclick="doLogin()" class="w-full bg-green-600 text-white py-1.5 rounded text-sm">Đăng nhập</button>
         <div class="flex justify-between text-xs mt-2">
-          <button onclick="showReset()" class="text-gray-600 underline">Quên mật khẩu?</button>
           <button onclick="toggleRegisterForm()" class="text-gray-600 underline">Đăng ký tài khoản mới</button>
         </div>
       </div>
 
-      <!-- Hộp đăng ký -->
+      <!-- Đăng ký -->
       <div id="registerBox" class="card p-3 mt-3 hidden">
         <h3 class="font-semibold text-green-700 mb-2 text-sm">📝 Đăng ký tài khoản</h3>
         <input id="regName" type="text" placeholder="Họ và tên" class="w-full border p-1.5 rounded mb-1" />
         <input id="regEmail" type="email" placeholder="Email" class="w-full border p-1.5 rounded mb-1" />
-        <input id="regPass" type="password" placeholder="Mật khẩu (tối thiểu 6 ký tự)" class="w-full border p-1.5 rounded mb-2" />
+        <input id="regPass" type="password" placeholder="Mật khẩu (≥6 ký tự)" class="w-full border p-1.5 rounded mb-2" />
         <button onclick="doRegister()" class="w-full bg-blue-600 text-white py-1.5 rounded text-sm">Đăng ký</button>
-        <button onclick="toggleRegisterForm()" class="mt-2 text-xs text-gray-600 underline">← Quay lại đăng nhập</button>
+        <button onclick="toggleRegisterForm()" class="mt-2 text-xs text-gray-600 underline">← Quay lại</button>
       </div>
 
       <!-- Đã đăng nhập -->
@@ -126,7 +92,7 @@
         <button onclick="doLogout()" class="w-full bg-red-500 text-white py-1.5 rounded">Đăng xuất</button>
       </div>
 
-      <!-- Liên kết nhanh + Form góp ý -->
+      <!-- Form góp ý -->
       <div class="card p-3 mt-3 text-sm" id="gopySection">
         <h4 class="font-semibold text-green-700 mb-2">💬 Form góp ý</h4>
         <div id="gopyFormArea">
@@ -139,13 +105,11 @@
 
     <!-- ==== CỘT GIỮA ==== -->
     <section class="space-y-6">
-      <!-- Thông báo -->
       <div id="thongbao" class="card p-4">
         <h2 class="text-lg font-bold text-green-700 mb-3">📢 Tin tức - Thông báo</h2>
         <div id="newsList" class="space-y-3 text-sm text-gray-500">Đang tải tin...</div>
       </div>
 
-      <!-- Danh sách góp ý -->
       <div class="card p-4">
         <h2 class="text-lg font-bold text-green-700 mb-3">📜 Danh sách góp ý</h2>
         <div id="gopyList" class="text-sm space-y-2"></div>
@@ -177,7 +141,22 @@
     © 2025 Lớp 9.1 - THCS Lê Lợi — Thiết kế bởi <b>THIÊN VŨ</b>
   </footer>
 
-  <!-- ======== NÚT ZALO ======== -->
+  <!-- ======== FORM CẬP NHẬT THÔNG TIN ======== -->
+  <div id="updateModal" class="modal">
+    <div class="bg-white rounded-lg p-6 w-80">
+      <h3 class="text-lg font-semibold mb-3 text-green-700">📝 Cập nhật thông tin</h3>
+      <input id="upName" class="border rounded p-2 w-full mb-2 text-sm" placeholder="Họ và tên" />
+      <input id="upPhone" class="border rounded p-2 w-full mb-2 text-sm" placeholder="Số điện thoại" />
+      <input id="upBirth" class="border rounded p-2 w-full mb-2 text-sm" placeholder="Ngày sinh (dd/mm/yyyy)" />
+      <input id="upAddress" class="border rounded p-2 w-full mb-3 text-sm" placeholder="Địa chỉ" />
+      <div class="flex justify-end gap-2">
+        <button onclick="closeUpdateModal()" class="text-gray-600 text-sm">Hủy</button>
+        <button onclick="saveUserInfo()" class="bg-green-600 text-white px-3 py-1 rounded text-sm">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== ZALO BUTTON ======== -->
   <a href="https://zalo.me/0868670473" target="_blank" class="zalo-button" title="Chat qua Zalo">
     <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" alt="Zalo">
   </a>
@@ -185,7 +164,7 @@
   <!-- ======== FIREBASE SCRIPT ======== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, addDoc, deleteDoc, collection, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -194,13 +173,13 @@
       projectId: "tracuuthcs-leloi",
       storageBucket: "tracuuthcs-leloi.firebasestorage.app",
       messagingSenderId: "305178645123",
-      appId: "1:305178645123:web:46d1c907461d9e160a41b6",
-      measurementId: "G-VHHN12Y3R5"
+      appId: "1:305178645123:web:46d1c907461d9e160a41b6"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const adminEmail = "thien.miraeasset@gmail.com";
 
     let currentUser = null;
 
@@ -212,8 +191,8 @@
       if (!name || !email || pass.length < 6) return alert("Vui lòng nhập đủ thông tin!");
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-        await setDoc(doc(db, "users", userCred.user.uid), { name, email, approved: true, created: new Date() });
-        alert("Đăng ký thành công!");
+        await setDoc(doc(db, "users", userCred.user.uid), { name, email, approved: false, created: new Date() });
+        alert("Đăng ký thành công! Vui lòng chờ admin duyệt tài khoản.");
         toggleRegisterForm();
       } catch (e) { alert("Lỗi: " + e.message); }
     };
@@ -222,13 +201,19 @@
     window.doLogin = async function() {
       try {
         const userCred = await signInWithEmailAndPassword(auth, loginEmail.value, loginPass.value);
+        const userDoc = await getDoc(doc(db, "users", userCred.user.uid));
+        if (!userDoc.exists() || !userDoc.data().approved) {
+          await signOut(auth);
+          return alert("Tài khoản chưa được admin duyệt!");
+        }
         currentUser = userCred.user;
         localStorage.setItem("userEmail", currentUser.email);
         loginBox.classList.add("hidden");
         loggedBox.classList.remove("hidden");
-        loggedInfo.innerHTML = `Xin chào <b>${currentUser.email}</b>`;
+        loggedInfo.innerHTML = `Xin chào <b>${userDoc.data().name || currentUser.email}</b>`;
+        capnhatMenu.classList.remove("hidden");
         checkFormVisibility();
-      } catch (e) { alert("Sai thông tin đăng nhập!"); }
+      } catch (e) { alert("Sai thông tin hoặc chưa được duyệt!"); }
     };
 
     // Đăng xuất
@@ -238,16 +223,17 @@
       localStorage.removeItem("userEmail");
       loggedBox.classList.add("hidden");
       loginBox.classList.remove("hidden");
+      capnhatMenu.classList.add("hidden");
       checkFormVisibility();
     };
 
-    // Toggle form đăng ký
+    // Toggle form
     window.toggleRegisterForm = function() {
       registerBox.classList.toggle("hidden");
       loginBox.classList.toggle("hidden");
     };
 
-    // Hiện/ẩn form góp ý
+    // Form góp ý hiển thị
     function checkFormVisibility() {
       const email = localStorage.getItem("userEmail");
       if (email) {
@@ -259,45 +245,63 @@
       }
     }
 
-    checkFormVisibility();
-
     // Gửi góp ý
     window.sendGopy = async function() {
       const text = gopyText.value.trim();
       const email = localStorage.getItem("userEmail");
-      if (!email) return alert("Vui lòng đăng nhập trước!");
+      if (!email) return alert("Vui lòng đăng nhập!");
       if (!text) return alert("Vui lòng nhập nội dung góp ý!");
       await addDoc(collection(db, "gopy"), { email, text, time: serverTimestamp() });
       gopyText.value = "";
     };
 
-    // Hiển thị góp ý realtime + quyền xóa admin
+    // Realtime góp ý
     const q = query(collection(db, "gopy"), orderBy("time", "desc"));
     onSnapshot(q, (snap) => {
       gopyList.innerHTML = "";
-      const adminEmail = "thien.miraeasset@gmail.com";
       snap.forEach(docu => {
         const d = docu.data();
         const time = d.time ? new Date(d.time.seconds * 1000).toLocaleString("vi-VN") : "";
-        let deleteBtn = "";
-        if (localStorage.getItem("userEmail") === adminEmail) {
-          deleteBtn = `<button onclick="deleteGopy('${docu.id}')" class='ml-2 text-red-500 text-xs'>🗑 Xóa</button>`;
-        }
+        let del = "";
+        if (localStorage.getItem("userEmail") === adminEmail)
+          del = `<button onclick="deleteGopy('${docu.id}')" class='ml-2 text-red-500 text-xs'>🗑 Xóa</button>`;
         gopyList.innerHTML += `
           <div class='p-2 border rounded'>
             <b>${d.email}</b>: ${d.text}
-            <div class='text-xs text-gray-500 mt-1'>${time}${deleteBtn}</div>
+            <div class='text-xs text-gray-500 mt-1'>${time}${del}</div>
           </div>`;
       });
     });
 
-    // Xóa góp ý (admin)
+    // Xóa góp ý
     window.deleteGopy = async function(id) {
       if (confirm("Xóa góp ý này?")) await deleteDoc(doc(db, "gopy", id));
     };
 
+    // ===== FORM CẬP NHẬT THÔNG TIN =====
+    window.openUpdateModal = () => updateModal.style.display = "flex";
+    window.closeUpdateModal = () => updateModal.style.display = "none";
+
+    window.saveUserInfo = async function() {
+      const email = localStorage.getItem("userEmail");
+      if (!email) return alert("Vui lòng đăng nhập!");
+      const user = auth.currentUser;
+      if (!user) return;
+      const data = {
+        name: upName.value.trim(),
+        phone: upPhone.value.trim(),
+        birth: upBirth.value.trim(),
+        address: upAddress.value.trim(),
+        updated: new Date()
+      };
+      await setDoc(doc(db, "users", user.uid), data, { merge: true });
+      alert("Đã lưu thông tin thành công!");
+      closeUpdateModal();
+    };
+
     window.addEventListener("load", () => {
       document.querySelector("header").classList.add("banner-loaded");
+      checkFormVisibility();
     });
   </script>
 </body>
