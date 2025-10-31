@@ -12,17 +12,8 @@
     .container-max { max-width: 1200px; margin: 0 auto; }
     .card { background: white; border-radius: .5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     input, textarea, button { font-size: 14px; }
-
-    /* Hiệu ứng banner */
-    .banner-text {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: all 1s ease;
-    }
-    .banner-loaded .banner-text {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    .banner-text { opacity: 0; transform: translateY(30px); transition: all 1s ease; }
+    .banner-loaded .banner-text { opacity: 1; transform: translateY(0); }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -129,28 +120,45 @@
     © 2025 Lớp 9.1 - THCS Lê Lợi — Thiết kế bởi THIÊN VŨ
   </footer>
 
-  <!-- Firebase (mẫu) -->
+  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { 
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
+      signOut, sendPasswordResetEmail, onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { 
+      getFirestore, setDoc, doc, getDoc 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyDpFxMdzcS_X5upNyf2tOnt4Nx95UH7e1I",
+      authDomain: "tracuuthcs-leloi.firebaseapp.com",
+      projectId: "tracuuthcs-leloi",
+      storageBucket: "tracuuthcs-leloi.firebasestorage.app",
+      messagingSenderId: "305178645123",
+      appId: "1:305178645123:web:46d1c907461d9e160a41b6",
+      measurementId: "G-VHHN12Y3R5"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
     async function doLogin(){
       const email=document.getElementById("loginEmail").value.trim();
       const pass=document.getElementById("loginPass").value;
-      try{await signInWithEmailAndPassword(auth,email,pass);alert("Đăng nhập thành công!");}
-      catch(e){alert("Lỗi: "+e.message);}
+      try{
+        const userCred = await signInWithEmailAndPassword(auth,email,pass);
+        const userRef = doc(db,"users",userCred.user.uid);
+        const snap = await getDoc(userRef);
+        if(!snap.exists() || !snap.data().approved){
+          await signOut(auth);
+          alert("Tài khoản chưa được phê duyệt, vui lòng chờ quản trị viên.");
+          return;
+        }
+        alert("Đăng nhập thành công!");
+      } catch(e){ alert("Lỗi: "+e.message); }
     }
 
     async function showRegister(){
@@ -158,8 +166,13 @@
       const email=prompt("Email:");
       const pass=prompt("Mật khẩu (6 ký tự trở lên):");
       if(!name||!email||pass.length<6)return alert("Nhập đủ thông tin!");
-      try{await createUserWithEmailAndPassword(auth,email,pass);alert("Đăng ký thành công!");}
-      catch(e){alert("Lỗi: "+e.message);}
+      try{
+        const userCred=await createUserWithEmailAndPassword(auth,email,pass);
+        await setDoc(doc(db,"users",userCred.user.uid),{
+          name,email,approved:false
+        });
+        alert("Đăng ký thành công! Vui lòng chờ quản trị viên phê duyệt.");
+      }catch(e){alert("Lỗi: "+e.message);}
     }
 
     function showReset(){
@@ -170,7 +183,14 @@
 
     async function doLogout(){await signOut(auth);alert("Đã đăng xuất!");}
 
-    // Kích hoạt hiệu ứng banner khi tải xong
+    onAuthStateChanged(auth,user=>{
+      const box=document.getElementById("loggedBox");
+      if(user){
+        document.getElementById("loggedInfo").innerHTML=`Xin chào <b>${user.email}</b>`;
+        box.classList.remove("hidden");
+      } else box.classList.add("hidden");
+    });
+
     window.addEventListener("load", () => {
       document.querySelector("header").classList.add("banner-loaded");
     });
