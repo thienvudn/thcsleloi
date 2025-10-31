@@ -15,7 +15,6 @@
   </style>
 </head>
 <body class="bg-gray-100">
-
   <!-- Banner -->
   <header class="relative overflow-hidden">
     <img src="https://i.ibb.co/Vctvnb5J/Th-m-n-i-dung-v-n-b-n-1.png" 
@@ -36,6 +35,7 @@
         <li><a href="#gioithieu" class="hover:underline">Giới thiệu</a></li>
         <li><a href="#thongbao" class="hover:underline">Thông báo</a></li>
         <li><a href="#album" class="hover:underline">Album ảnh</a></li>
+        <li><a href="#gopy" class="hover:underline">Form góp ý</a></li>
         <li><a href="#lienhe" class="hover:underline">Liên hệ</a></li>
       </ul>
     </div>
@@ -83,31 +83,33 @@
         <ul class="space-y-1">
           <li><a href="#" class="text-blue-600 hover:underline">Thời khóa biểu</a></li>
           <li><a href="#" class="text-blue-600 hover:underline">Tài liệu Toán</a></li>
-          <li><a href="#" class="text-blue-600 hover:underline">Form góp ý</a></li>
+          <li><a href="#gopy" class="text-blue-600 hover:underline">Form góp ý</a></li>
         </ul>
-      </div>
-
-      <!-- Form góp ý -->
-      <div id="feedbackBox" class="card p-3 mt-3 text-sm hidden">
-        <h4 class="font-semibold text-green-700 mb-2">💬 Form góp ý</h4>
-        <textarea id="feedbackInput" rows="3" placeholder="Nhập nội dung góp ý..." class="w-full border rounded p-2 text-sm mb-2"></textarea>
-        <button onclick="sendFeedback()" class="w-full bg-green-600 text-white py-1.5 rounded text-sm">Gửi góp ý</button>
       </div>
     </aside>
 
-    <!-- Giữa -->
-    <section id="thongbao" class="card p-4">
-      <h2 class="text-lg font-bold text-green-700 mb-3">📢 Tin tức - Thông báo</h2>
-      <div id="newsList" class="space-y-3 text-sm">
-        <div class="text-gray-500">Đang tải tin...</div>
+    <!-- Cột giữa -->
+    <section class="space-y-6">
+      <!-- Tin tức -->
+      <div id="thongbao" class="card p-4">
+        <h2 class="text-lg font-bold text-green-700 mb-3">📢 Tin tức - Thông báo</h2>
+        <div id="newsList" class="space-y-3 text-sm text-gray-500">Đang tải tin...</div>
       </div>
-    </section>
 
-    <!-- Hiển thị góp ý -->
-    <section id="feedbackList" class="card p-4 mt-4">
-      <h2 class="text-lg font-bold text-green-700 mb-3">🗒️ Góp ý của học sinh</h2>
-      <div id="feedbackContainer" class="space-y-3 text-sm text-gray-700">
-        <div class="text-gray-500">Chưa có góp ý nào.</div>
+      <!-- Form góp ý -->
+      <div id="gopy" class="card p-4">
+        <h2 class="text-lg font-bold text-green-700 mb-3">💬 Form góp ý</h2>
+        <p class="text-sm text-gray-600 mb-2">Học sinh có thể gửi ý kiến, phản hồi hoặc đóng góp cho lớp và trường. Nội dung sẽ hiển thị công khai dưới đây.</p>
+        <textarea id="gopyText" rows="3" placeholder="Nhập nội dung góp ý..." class="w-full border rounded p-2 text-sm"></textarea>
+        <button onclick="sendGopy()" class="mt-2 bg-green-600 text-white px-4 py-1.5 rounded text-sm">Gửi góp ý</button>
+        <div id="gopyList" class="mt-4 text-sm space-y-2"></div>
+      </div>
+
+      <!-- Album -->
+      <div id="album" class="card p-4">
+        <h2 class="text-lg font-bold text-green-700 mb-3">📸 Album ảnh</h2>
+        <img src="https://i.imgur.com/1ZQZ1hQ.jpg" alt="Ảnh lớp" class="w-full rounded mb-2"/>
+        <a href="#" class="text-blue-600 hover:underline text-xs">Xem thêm album →</a>
       </div>
     </section>
 
@@ -123,9 +125,10 @@
       </div>
 
       <div class="card p-3 mt-3 text-sm">
-        <h4 class="font-semibold text-green-700 mb-2">Album</h4>
-        <img src="https://i.imgur.com/1ZQZ1hQ.jpg" alt="ảnh" class="w-full rounded mb-2"/>
-        <a href="#album" class="text-blue-600 hover:underline text-xs">Xem thêm album →</a>
+        <h4 class="font-semibold text-green-700 mb-2">Liên hệ</h4>
+        <p>Giáo viên chủ nhiệm: <b>Cô Trân</b></p>
+        <p>Email: <a href="mailto:contact@leloi.edu.vn" class="text-blue-600 hover:underline">contact@leloi.edu.vn</a></p>
+        <p>SĐT: 0905.xxx.xxx</p>
       </div>
     </aside>
   </main>
@@ -137,12 +140,8 @@
   <!-- Firebase Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { 
-      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { 
-      getFirestore, doc, setDoc, getDoc, getDocs, collection 
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, addDoc, collection, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDpFxMdzcS_X5upNyf2tOnt4Nx95UH7e1I",
@@ -158,13 +157,12 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Toggle form đăng ký
+    // === Đăng ký / đăng nhập ===
     window.toggleRegisterForm = function() {
       registerBox.classList.toggle("hidden");
       loginBox.classList.toggle("hidden");
     };
 
-    // Đăng ký
     window.doRegister = async function() {
       const name = regName.value.trim();
       const email = regEmail.value.trim();
@@ -180,11 +178,9 @@
       } catch (e) { alert("Lỗi: " + e.message); }
     };
 
-    // Đăng nhập
     window.doLogin = async function() {
       const email = loginEmail.value.trim();
       const pass = loginPass.value.trim();
-      const remember = document.getElementById("rememberMe").checked;
       try {
         const userCred = await signInWithEmailAndPassword(auth, email, pass);
         const ref = doc(db, "users", userCred.user.uid);
@@ -197,38 +193,19 @@
         alert("Đăng nhập thành công!");
         loginBox.classList.add("hidden");
         loggedBox.classList.remove("hidden");
-        loggedInfo.innerHTML = `Xin chào <b>${snap.data().name || email}</b>`;
-        if (remember) {
-          localStorage.setItem("savedEmail", email);
-          localStorage.setItem("savedPass", pass);
-        } else {
-          localStorage.removeItem("savedEmail");
-          localStorage.removeItem("savedPass");
-        }
+        loggedInfo.innerHTML = `Xin chào <b>${snap.data().name}</b>`;
+        localStorage.setItem("userName", snap.data().name);
       } catch (e) { alert("Lỗi: " + e.message); }
     };
 
-    // Tự điền thông tin đã lưu
-    window.addEventListener("DOMContentLoaded", () => {
-      const savedEmail = localStorage.getItem("savedEmail");
-      const savedPass = localStorage.getItem("savedPass");
-      if (savedEmail && savedPass) {
-        loginEmail.value = savedEmail;
-        loginPass.value = savedPass;
-        document.getElementById("rememberMe").checked = true;
-      }
-    });
-
-    // Đăng xuất
     window.doLogout = async function() {
       await signOut(auth);
+      localStorage.removeItem("userName");
       alert("Đã đăng xuất!");
       loggedBox.classList.add("hidden");
       loginBox.classList.remove("hidden");
-      document.getElementById("feedbackBox").classList.add("hidden");
     };
 
-    // Quên mật khẩu
     window.showReset = async function() {
       const email = prompt("Nhập email để khôi phục:");
       if (!email) return;
@@ -236,64 +213,28 @@
       alert("Đã gửi link khôi phục mật khẩu!");
     };
 
-    // Gửi góp ý
-    window.sendFeedback = async function() {
-      const content = document.getElementById("feedbackInput").value.trim();
-      if (!content) return alert("Vui lòng nhập nội dung góp ý!");
-      try {
-        const user = auth.currentUser;
-        if (!user) return alert("Bạn cần đăng nhập để gửi góp ý!");
-        const ref = doc(db, "users", user.uid);
-        const snap = await getDoc(ref);
-        const name = snap.exists() ? snap.data().name : "Học sinh ẩn danh";
-        const feedbackRef = doc(db, "feedbacks", `${Date.now()}_${user.uid}`);
-        await setDoc(feedbackRef, {
-          name,
-          content,
-          time: new Date()
-        });
-        document.getElementById("feedbackInput").value = "";
-        loadFeedbacks();
-        alert("Đã gửi góp ý!");
-      } catch (e) { alert("Lỗi: " + e.message); }
+    // === Form góp ý ===
+    window.sendGopy = async function() {
+      const text = gopyText.value.trim();
+      const name = localStorage.getItem("userName") || "Ẩn danh";
+      if (!text) return alert("Vui lòng nhập nội dung góp ý!");
+      await addDoc(collection(db, "gopy"), {
+        name, text, time: serverTimestamp()
+      });
+      gopyText.value = "";
     };
 
-    // Tải danh sách góp ý
-    async function loadFeedbacks() {
-      const container = document.getElementById("feedbackContainer");
-      const snap = await getDocs(collection(db, "feedbacks"));
-      if (snap.empty) {
-        container.innerHTML = "<div class='text-gray-500'>Chưa có góp ý nào.</div>";
-        return;
-      }
-      container.innerHTML = "";
-      snap.forEach(docSnap => {
-        const d = docSnap.data();
-        const date = d.time?.seconds ? new Date(d.time.seconds * 1000).toLocaleString("vi-VN") : "";
-        container.innerHTML += `
-          <div class="border-b pb-2">
-            <div class="font-semibold text-green-700">${d.name}</div>
-            <div class="text-gray-700">${d.content}</div>
-            <div class="text-xs text-gray-400">${date}</div>
-          </div>`;
+    // Hiển thị góp ý realtime
+    const q = query(collection(db, "gopy"), orderBy("time", "desc"));
+    onSnapshot(q, (snap) => {
+      gopyList.innerHTML = "";
+      snap.forEach(doc => {
+        const d = doc.data();
+        const time = d.time ? new Date(d.time.seconds * 1000).toLocaleString("vi-VN") : "";
+        gopyList.innerHTML += `<div class='p-2 border rounded'><b>${d.name}</b>: ${d.text}<div class='text-xs text-gray-500 mt-1'>${time}</div></div>`;
       });
-    }
-
-    // Theo dõi trạng thái đăng nhập
-    onAuthStateChanged(auth, user => {
-      if (user) {
-        loggedBox.classList.remove("hidden");
-        loginBox.classList.add("hidden");
-        document.getElementById("feedbackBox").classList.remove("hidden");
-        loadFeedbacks();
-      } else {
-        loggedBox.classList.add("hidden");
-        loginBox.classList.remove("hidden");
-        document.getElementById("feedbackBox").classList.add("hidden");
-      }
     });
 
-    // Hiệu ứng banner
     window.addEventListener("load", () => {
       document.querySelector("header").classList.add("banner-loaded");
     });
