@@ -73,6 +73,7 @@
         <button onclick="doLogin()" class="w-full bg-green-600 text-white py-1.5 rounded text-sm">Đăng nhập</button>
         <div class="flex justify-between text-xs mt-2">
           <button onclick="toggleRegisterForm()" class="text-gray-600 underline">Đăng ký tài khoản mới</button>
+          <button onclick="resetPassword()" class="text-gray-600 underline">Quên mật khẩu?</button>
         </div>
       </div>
 
@@ -136,7 +137,6 @@
     </aside>
   </main>
 
-  <!-- ======== FOOTER ======== -->
   <footer class="container-max mx-auto px-4 py-4 text-center text-xs text-gray-600">
     © 2025 Lớp 9.1 - THCS Lê Lợi — Thiết kế bởi <b>THIÊN VŨ</b>
   </footer>
@@ -164,8 +164,14 @@
   <!-- ======== FIREBASE SCRIPT ======== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, addDoc, deleteDoc, collection, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { 
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
+      sendPasswordResetEmail, signOut 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { 
+      getFirestore, doc, setDoc, getDoc, addDoc, deleteDoc, collection, 
+      serverTimestamp, onSnapshot, query, orderBy 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDpFxMdzcS_X5upNyf2tOnt4Nx95UH7e1I",
@@ -183,7 +189,7 @@
 
     let currentUser = null;
 
-    // Đăng ký
+    // --- ĐĂNG KÝ ---
     window.doRegister = async function() {
       const name = regName.value.trim();
       const email = regEmail.value.trim();
@@ -197,7 +203,7 @@
       } catch (e) { alert("Lỗi: " + e.message); }
     };
 
-    // Đăng nhập
+    // --- ĐĂNG NHẬP ---
     window.doLogin = async function() {
       try {
         const userCred = await signInWithEmailAndPassword(auth, loginEmail.value, loginPass.value);
@@ -216,7 +222,17 @@
       } catch (e) { alert("Sai thông tin hoặc chưa được duyệt!"); }
     };
 
-    // Đăng xuất
+    // --- QUÊN MẬT KHẨU ---
+    window.resetPassword = async function() {
+      const email = prompt("Nhập email để đặt lại mật khẩu:");
+      if (!email) return;
+      try {
+        await sendPasswordResetEmail(auth, email);
+        alert("Đã gửi email khôi phục mật khẩu, vui lòng kiểm tra hộp thư!");
+      } catch (e) { alert("Lỗi: " + e.message); }
+    };
+
+    // --- ĐĂNG XUẤT ---
     window.doLogout = async function() {
       await signOut(auth);
       currentUser = null;
@@ -227,13 +243,13 @@
       checkFormVisibility();
     };
 
-    // Toggle form
+    // --- CHUYỂN GIỮA LOGIN/REGISTER ---
     window.toggleRegisterForm = function() {
       registerBox.classList.toggle("hidden");
       loginBox.classList.toggle("hidden");
     };
 
-    // Form góp ý hiển thị
+    // --- KIỂM TRA FORM GÓP Ý ---
     function checkFormVisibility() {
       const email = localStorage.getItem("userEmail");
       if (email) {
@@ -245,7 +261,7 @@
       }
     }
 
-    // Gửi góp ý
+    // --- GỬI GÓP Ý ---
     window.sendGopy = async function() {
       const text = gopyText.value.trim();
       const email = localStorage.getItem("userEmail");
@@ -255,7 +271,7 @@
       gopyText.value = "";
     };
 
-    // Realtime góp ý
+    // --- REALTIME GÓP Ý ---
     const q = query(collection(db, "gopy"), orderBy("time", "desc"));
     onSnapshot(q, (snap) => {
       gopyList.innerHTML = "";
@@ -273,36 +289,33 @@
       });
     });
 
-    // Xóa góp ý
+    // --- XÓA GÓP Ý (ADMIN) ---
     window.deleteGopy = async function(id) {
       if (confirm("Xóa góp ý này?")) await deleteDoc(doc(db, "gopy", id));
     };
 
-    // ===== FORM CẬP NHẬT THÔNG TIN =====
+    // --- FORM CẬP NHẬT THÔNG TIN ---
     window.openUpdateModal = () => updateModal.style.display = "flex";
     window.closeUpdateModal = () => updateModal.style.display = "none";
-
     window.saveUserInfo = async function() {
       const email = localStorage.getItem("userEmail");
       if (!email) return alert("Vui lòng đăng nhập!");
-      const user = auth.currentUser;
-      if (!user) return;
-      const data = {
-        name: upName.value.trim(),
-        phone: upPhone.value.trim(),
-        birth: upBirth.value.trim(),
-        address: upAddress.value.trim(),
-        updated: new Date()
-      };
-      await setDoc(doc(db, "users", user.uid), data, { merge: true });
-      alert("Đã lưu thông tin thành công!");
+      const ref = doc(db, "users", auth.currentUser.uid);
+      await setDoc(ref, {
+        name: upName.value,
+        phone: upPhone.value,
+        birth: upBirth.value,
+        address: upAddress.value
+      }, { merge: true });
+      alert("Đã lưu thông tin!");
       closeUpdateModal();
     };
 
-    window.addEventListener("load", () => {
+    // --- GIAO DIỆN ---
+    window.onload = () => {
       document.querySelector("header").classList.add("banner-loaded");
       checkFormVisibility();
-    });
+    };
   </script>
 </body>
 </html>
