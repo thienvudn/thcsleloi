@@ -7,13 +7,20 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
     }
     .container-max { max-width: 1200px; margin: 0 auto; }
     .card { background: white; border-radius: .5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     input, textarea, button { font-size: 14px; }
-    .banner-text { opacity: 0; transform: translateY(30px); transition: all 1s ease; }
-    .banner-loaded .banner-text { opacity: 1; transform: translateY(0); }
+    .banner-text {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 1s ease;
+    }
+    .banner-loaded .banner-text {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -50,10 +57,6 @@
         <h3 class="font-semibold text-green-700 mb-2 text-sm">🔐 Đăng nhập</h3>
         <input id="loginEmail" type="email" placeholder="Email" class="w-full border p-1.5 rounded mb-1" />
         <input id="loginPass" type="password" placeholder="Mật khẩu" class="w-full border p-1.5 rounded mb-2" />
-        <label class="inline-flex items-center gap-2 mb-2 text-sm">
-          <input id="rememberMe" type="checkbox" class="w-3.5 h-3.5" />
-          <span>Lưu đăng nhập</span>
-        </label>
         <button onclick="doLogin()" class="w-full bg-green-600 text-white py-1.5 rounded text-sm">Đăng nhập</button>
         <div class="flex justify-between text-xs mt-2">
           <button onclick="showReset()" class="text-gray-600 underline">Quên mật khẩu?</button>
@@ -78,20 +81,7 @@
 
     <!-- Giữa: Thông báo -->
     <section id="thongbao" class="card p-4">
-      <div class="flex items-center justify-between mb-3">
-        <h2 class="text-lg font-bold text-green-700">📢 Tin tức - Thông báo</h2>
-        <div id="addPostArea" class="hidden">
-          <button onclick="toggleAddPost()" class="bg-green-600 text-white py-1.5 px-3 rounded text-sm">+ Thêm tin</button>
-        </div>
-      </div>
-
-      <div id="addPostForm" class="hidden mb-3">
-        <input id="postTitle" placeholder="Tiêu đề" class="w-full border p-1.5 rounded mb-1"/>
-        <textarea id="postContent" placeholder="Nội dung" class="w-full border p-1.5 rounded mb-2"></textarea>
-        <button onclick="addPost()" class="bg-green-600 text-white py-1.5 px-4 rounded text-sm">Đăng</button>
-        <button onclick="toggleAddPost(true)" class="ml-2 text-xs text-gray-600">Hủy</button>
-      </div>
-
+      <h2 class="text-lg font-bold text-green-700 mb-3">📢 Tin tức - Thông báo</h2>
       <div id="newsList" class="space-y-3 text-sm">
         <div class="text-gray-500">Đang tải tin...</div>
       </div>
@@ -120,17 +110,14 @@
     © 2025 Lớp 9.1 - THCS Lê Lợi — Thiết kế bởi THIÊN VŨ
   </footer>
 
-  <!-- Firebase -->
+  <!-- Firebase Script -->
   <script type="module">
+    // Import Firebase SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { 
-      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, 
-      signOut, sendPasswordResetEmail, onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { 
-      getFirestore, setDoc, doc, getDoc 
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    // 🔹 Cấu hình Firebase của bạn
     const firebaseConfig = {
       apiKey: "AIzaSyDpFxMdzcS_X5upNyf2tOnt4Nx95UH7e1I",
       authDomain: "tracuuthcs-leloi.firebaseapp.com",
@@ -145,56 +132,65 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    async function doLogin(){
-      const email=document.getElementById("loginEmail").value.trim();
-      const pass=document.getElementById("loginPass").value;
-      try{
-        const userCred = await signInWithEmailAndPassword(auth,email,pass);
-        const userRef = doc(db,"users",userCred.user.uid);
-        const snap = await getDoc(userRef);
-        if(!snap.exists() || !snap.data().approved){
+    // Hàm đăng nhập
+    async function doLogin() {
+      const email = loginEmail.value.trim();
+      const pass = loginPass.value;
+      try {
+        const userCred = await signInWithEmailAndPassword(auth, email, pass);
+        const ref = doc(db, "users", userCred.user.uid);
+        const snap = await getDoc(ref);
+        if (!snap.exists() || !snap.data().approved) {
           await signOut(auth);
-          alert("Tài khoản chưa được phê duyệt, vui lòng chờ quản trị viên.");
+          alert("Tài khoản chưa được phê duyệt. Vui lòng chờ admin duyệt!");
           return;
         }
         alert("Đăng nhập thành công!");
-      } catch(e){ alert("Lỗi: "+e.message); }
+        loggedBox.classList.remove("hidden");
+        loggedInfo.innerHTML = `Xin chào <b>${email}</b>`;
+      } catch (e) {
+        alert("Lỗi: " + e.message);
+      }
     }
 
-    async function showRegister(){
-      const name=prompt("Họ và tên:");
-      const email=prompt("Email:");
-      const pass=prompt("Mật khẩu (6 ký tự trở lên):");
-      if(!name||!email||pass.length<6)return alert("Nhập đủ thông tin!");
-      try{
-        const userCred=await createUserWithEmailAndPassword(auth,email,pass);
-        await setDoc(doc(db,"users",userCred.user.uid),{
-          name,email,approved:false
+    // Hàm đăng ký
+    async function showRegister() {
+      const name = prompt("Họ và tên:");
+      const email = prompt("Email:");
+      const pass = prompt("Mật khẩu (6 ký tự trở lên):");
+      if (!name || !email || pass.length < 6) return alert("Nhập đủ thông tin!");
+      try {
+        const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+        await setDoc(doc(db, "users", userCred.user.uid), {
+          name,
+          email,
+          approved: false,
+          created: new Date()
         });
-        alert("Đăng ký thành công! Vui lòng chờ quản trị viên phê duyệt.");
-      }catch(e){alert("Lỗi: "+e.message);}
+        alert("Đăng ký thành công! Vui lòng chờ admin phê duyệt.");
+      } catch (e) {
+        alert("Lỗi: " + e.message);
+      }
     }
 
-    function showReset(){
-      const email=prompt("Nhập email để khôi phục:");
-      if(!email)return;
-      sendPasswordResetEmail(auth,email).then(()=>alert("Đã gửi link khôi phục mật khẩu!"));
+    // Hàm reset mật khẩu
+    async function showReset() {
+      const email = prompt("Nhập email để khôi phục:");
+      if (!email) return;
+      await sendPasswordResetEmail(auth, email);
+      alert("Đã gửi link khôi phục mật khẩu!");
     }
 
-    async function doLogout(){await signOut(auth);alert("Đã đăng xuất!");}
+    async function doLogout() {
+      await signOut(auth);
+      alert("Đã đăng xuất!");
+      loggedBox.classList.add("hidden");
+    }
 
-    onAuthStateChanged(auth,user=>{
-      const box=document.getElementById("loggedBox");
-      if(user){
-        document.getElementById("loggedInfo").innerHTML=`Xin chào <b>${user.email}</b>`;
-        box.classList.remove("hidden");
-      } else box.classList.add("hidden");
-    });
-
+    // Hiệu ứng banner
     window.addEventListener("load", () => {
       document.querySelector("header").classList.add("banner-loaded");
     });
   </script>
-
 </body>
 </html>
