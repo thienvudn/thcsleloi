@@ -10,16 +10,12 @@
 
   <!-- Phong cách tổng thể -->
   <style>
-    /* Font và giao diện chung */
     body {
       font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
       background-color: #f3f4f6;
     }
 
-    .container-max {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+    .container-max { max-width: 1200px; margin: 0 auto; }
 
     .card {
       background: white;
@@ -27,11 +23,6 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
 
-    input, textarea, button {
-      font-size: 14px;
-    }
-
-    /* Hiệu ứng banner */
     .banner-text {
       opacity: 0;
       transform: translateY(30px);
@@ -43,7 +34,6 @@
       transform: translateY(0);
     }
 
-    /* Nút Zalo nổi */
     .zalo-button {
       position: fixed;
       bottom: 20px;
@@ -136,42 +126,29 @@
         <button onclick="doLogout()" class="w-full bg-red-500 text-white py-1.5 rounded">Đăng xuất</button>
       </div>
 
-      <!-- Liên kết nhanh -->
-      <div class="card p-3 mt-3 text-sm">
-        <h4 class="font-semibold text-green-700 mb-2">Liên kết nhanh</h4>
-        <ul class="space-y-1">
-          <li><a href="#" class="text-blue-600 hover:underline">Thời khóa biểu</a></li>
-          <li><a href="#" class="text-blue-600 hover:underline">Tài liệu Toán</a></li>
-          <li><a href="#gopy" class="text-blue-600 hover:underline">Form góp ý</a></li>
-        </ul>
+      <!-- Liên kết nhanh + Form góp ý -->
+      <div class="card p-3 mt-3 text-sm" id="gopySection">
+        <h4 class="font-semibold text-green-700 mb-2">💬 Form góp ý</h4>
+        <div id="gopyFormArea">
+          <textarea id="gopyText" rows="3" placeholder="Nhập nội dung góp ý..." class="w-full border rounded p-2 text-sm"></textarea>
+          <button onclick="sendGopy()" class="mt-2 bg-green-600 text-white px-4 py-1.5 rounded text-sm w-full">Gửi góp ý</button>
+        </div>
+        <p id="loginToComment" class="hidden text-gray-500 text-xs">🔒 Vui lòng đăng nhập để gửi góp ý.</p>
       </div>
     </aside>
 
     <!-- ==== CỘT GIỮA ==== -->
     <section class="space-y-6">
-      <!-- Tin tức -->
+      <!-- Thông báo -->
       <div id="thongbao" class="card p-4">
         <h2 class="text-lg font-bold text-green-700 mb-3">📢 Tin tức - Thông báo</h2>
         <div id="newsList" class="space-y-3 text-sm text-gray-500">Đang tải tin...</div>
       </div>
 
-      <!-- Form góp ý -->
-      <div id="gopy" class="card p-4">
-        <h2 class="text-lg font-bold text-green-700 mb-3">💬 Form góp ý</h2>
-        <p class="text-sm text-gray-600 mb-2">
-          Các bạn có thể gửi ý kiến, phản hồi hoặc đóng góp cho lớp. 
-          Nội dung sẽ hiển thị công khai dưới đây.
-        </p>
-        <textarea id="gopyText" rows="3" placeholder="Nhập nội dung góp ý..." class="w-full border rounded p-2 text-sm"></textarea>
-        <button onclick="sendGopy()" class="mt-2 bg-green-600 text-white px-4 py-1.5 rounded text-sm">Gửi góp ý</button>
-        <div id="gopyList" class="mt-4 text-sm space-y-2"></div>
-      </div>
-
-      <!-- Album -->
-      <div id="album" class="card p-4">
-        <h2 class="text-lg font-bold text-green-700 mb-3">📸 Album ảnh</h2>
-        <img src="https://i.imgur.com/1ZQZ1hQ.jpg" alt="Ảnh lớp" class="w-full rounded mb-2"/>
-        <a href="#" class="text-blue-600 hover:underline text-xs">Xem thêm album →</a>
+      <!-- Danh sách góp ý -->
+      <div class="card p-4">
+        <h2 class="text-lg font-bold text-green-700 mb-3">📜 Danh sách góp ý</h2>
+        <div id="gopyList" class="text-sm space-y-2"></div>
       </div>
     </section>
 
@@ -200,7 +177,7 @@
     © 2025 Lớp 9.1 - THCS Lê Lợi — Thiết kế bởi <b>THIÊN VŨ</b>
   </footer>
 
-  <!-- ======== NÚT ZALO NỔI ======== -->
+  <!-- ======== NÚT ZALO ======== -->
   <a href="https://zalo.me/0868670473" target="_blank" class="zalo-button" title="Chat qua Zalo">
     <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" alt="Zalo">
   </a>
@@ -209,9 +186,8 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, addDoc, collection, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, addDoc, deleteDoc, collection, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // Cấu hình Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDpFxMdzcS_X5upNyf2tOnt4Nx95UH7e1I",
       authDomain: "tracuuthcs-leloi.firebaseapp.com",
@@ -226,12 +202,9 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ==== Đăng ký / đăng nhập ====
-    window.toggleRegisterForm = function() {
-      registerBox.classList.toggle("hidden");
-      loginBox.classList.toggle("hidden");
-    };
+    let currentUser = null;
 
+    // Đăng ký
     window.doRegister = async function() {
       const name = regName.value.trim();
       const email = regEmail.value.trim();
@@ -239,72 +212,90 @@
       if (!name || !email || pass.length < 6) return alert("Vui lòng nhập đủ thông tin!");
       try {
         const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-        await setDoc(doc(db, "users", userCred.user.uid), {
-          name, email, approved: false, created: new Date()
-        });
-        alert("Đăng ký thành công! Vui lòng chờ admin phê duyệt.");
+        await setDoc(doc(db, "users", userCred.user.uid), { name, email, approved: true, created: new Date() });
+        alert("Đăng ký thành công!");
         toggleRegisterForm();
       } catch (e) { alert("Lỗi: " + e.message); }
     };
 
+    // Đăng nhập
     window.doLogin = async function() {
-      const email = loginEmail.value.trim();
-      const pass = loginPass.value.trim();
       try {
-        const userCred = await signInWithEmailAndPassword(auth, email, pass);
-        const ref = doc(db, "users", userCred.user.uid);
-        const snap = await getDoc(ref);
-        if (!snap.exists() || !snap.data().approved) {
-          await signOut(auth);
-          alert("Tài khoản chưa được phê duyệt!");
-          return;
-        }
-        alert("Đăng nhập thành công!");
+        const userCred = await signInWithEmailAndPassword(auth, loginEmail.value, loginPass.value);
+        currentUser = userCred.user;
+        localStorage.setItem("userEmail", currentUser.email);
         loginBox.classList.add("hidden");
         loggedBox.classList.remove("hidden");
-        loggedInfo.innerHTML = `Xin chào <b>${snap.data().name}</b>`;
-        localStorage.setItem("userName", snap.data().name);
-      } catch (e) { alert("Lỗi: " + e.message); }
+        loggedInfo.innerHTML = `Xin chào <b>${currentUser.email}</b>`;
+        checkFormVisibility();
+      } catch (e) { alert("Sai thông tin đăng nhập!"); }
     };
 
+    // Đăng xuất
     window.doLogout = async function() {
       await signOut(auth);
-      localStorage.removeItem("userName");
-      alert("Đã đăng xuất!");
+      currentUser = null;
+      localStorage.removeItem("userEmail");
       loggedBox.classList.add("hidden");
       loginBox.classList.remove("hidden");
+      checkFormVisibility();
     };
 
-    window.showReset = async function() {
-      const email = prompt("Nhập email để khôi phục:");
-      if (!email) return;
-      await sendPasswordResetEmail(auth, email);
-      alert("Đã gửi link khôi phục mật khẩu!");
+    // Toggle form đăng ký
+    window.toggleRegisterForm = function() {
+      registerBox.classList.toggle("hidden");
+      loginBox.classList.toggle("hidden");
     };
 
-    // ==== Form góp ý ====
+    // Hiện/ẩn form góp ý
+    function checkFormVisibility() {
+      const email = localStorage.getItem("userEmail");
+      if (email) {
+        gopyFormArea.classList.remove("hidden");
+        loginToComment.classList.add("hidden");
+      } else {
+        gopyFormArea.classList.add("hidden");
+        loginToComment.classList.remove("hidden");
+      }
+    }
+
+    checkFormVisibility();
+
+    // Gửi góp ý
     window.sendGopy = async function() {
       const text = gopyText.value.trim();
-      const name = localStorage.getItem("userName") || "Ẩn danh";
+      const email = localStorage.getItem("userEmail");
+      if (!email) return alert("Vui lòng đăng nhập trước!");
       if (!text) return alert("Vui lòng nhập nội dung góp ý!");
-      await addDoc(collection(db, "gopy"), {
-        name, text, time: serverTimestamp()
-      });
+      await addDoc(collection(db, "gopy"), { email, text, time: serverTimestamp() });
       gopyText.value = "";
     };
 
-    // Hiển thị góp ý realtime
+    // Hiển thị góp ý realtime + quyền xóa admin
     const q = query(collection(db, "gopy"), orderBy("time", "desc"));
     onSnapshot(q, (snap) => {
       gopyList.innerHTML = "";
-      snap.forEach(doc => {
-        const d = doc.data();
+      const adminEmail = "thien.miraeasset@gmail.com";
+      snap.forEach(docu => {
+        const d = docu.data();
         const time = d.time ? new Date(d.time.seconds * 1000).toLocaleString("vi-VN") : "";
-        gopyList.innerHTML += `<div class='p-2 border rounded'><b>${d.name}</b>: ${d.text}<div class='text-xs text-gray-500 mt-1'>${time}</div></div>`;
+        let deleteBtn = "";
+        if (localStorage.getItem("userEmail") === adminEmail) {
+          deleteBtn = `<button onclick="deleteGopy('${docu.id}')" class='ml-2 text-red-500 text-xs'>🗑 Xóa</button>`;
+        }
+        gopyList.innerHTML += `
+          <div class='p-2 border rounded'>
+            <b>${d.email}</b>: ${d.text}
+            <div class='text-xs text-gray-500 mt-1'>${time}${deleteBtn}</div>
+          </div>`;
       });
     });
 
-    // Hiệu ứng banner
+    // Xóa góp ý (admin)
+    window.deleteGopy = async function(id) {
+      if (confirm("Xóa góp ý này?")) await deleteDoc(doc(db, "gopy", id));
+    };
+
     window.addEventListener("load", () => {
       document.querySelector("header").classList.add("banner-loaded");
     });
