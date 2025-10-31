@@ -19,6 +19,7 @@
   <!-- Banner -->
   <header class="relative overflow-hidden">
     <img src="https://i.ibb.co/27nXMcjB/unnamed-2.jpg" alt="Banner" class="w-full h-40 md:h-52 object-cover brightness-75">
+    <img src="https://i.ibb.co/Sg5J8vr/Red-and-Blue-Modern-School-Logo.png" alt="Logo" class="absolute left-4 top-4 w-14 h-14 rounded-full border-2 border-white shadow-lg bg-white object-contain">
     <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
       <div class="banner-text text-center text-white">
         <h1 class="text-2xl md:text-3xl font-bold drop-shadow-lg">TRƯỜNG THCS LÊ LỢI</h1>
@@ -49,6 +50,9 @@
         <h3 class="font-semibold text-green-700 mb-2 text-sm">🔐 Đăng nhập</h3>
         <input id="loginEmail" type="email" placeholder="Email" class="w-full border p-1.5 rounded mb-1" />
         <input id="loginPass" type="password" placeholder="Mật khẩu" class="w-full border p-1.5 rounded mb-2" />
+        <label class="flex items-center text-xs text-gray-600 mb-2">
+          <input type="checkbox" id="rememberMe" class="mr-1"> Lưu thông tin đăng nhập
+        </label>
         <button onclick="doLogin()" class="w-full bg-green-600 text-white py-1.5 rounded text-sm">Đăng nhập</button>
         <div class="flex justify-between text-xs mt-2">
           <button onclick="showReset()" class="text-gray-600 underline">Quên mật khẩu?</button>
@@ -159,6 +163,7 @@
     window.doLogin = async function() {
       const email = loginEmail.value.trim();
       const pass = loginPass.value.trim();
+      const remember = document.getElementById("rememberMe").checked;
       try {
         const userCred = await signInWithEmailAndPassword(auth, email, pass);
         const ref = doc(db, "users", userCred.user.uid);
@@ -171,9 +176,27 @@
         alert("Đăng nhập thành công!");
         loginBox.classList.add("hidden");
         loggedBox.classList.remove("hidden");
-        loggedInfo.innerHTML = `Xin chào <b>${email}</b>`;
+        loggedInfo.innerHTML = `Xin chào <b>${snap.data().name || email}</b>`;
+        if (remember) {
+          localStorage.setItem("savedEmail", email);
+          localStorage.setItem("savedPass", pass);
+        } else {
+          localStorage.removeItem("savedEmail");
+          localStorage.removeItem("savedPass");
+        }
       } catch (e) { alert("Lỗi: " + e.message); }
     };
+
+    // Tự điền thông tin đã lưu
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedEmail = localStorage.getItem("savedEmail");
+      const savedPass = localStorage.getItem("savedPass");
+      if (savedEmail && savedPass) {
+        loginEmail.value = savedEmail;
+        loginPass.value = savedPass;
+        document.getElementById("rememberMe").checked = true;
+      }
+    });
 
     // Đăng xuất
     window.doLogout = async function() {
