@@ -4,21 +4,80 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Lớp 9.1 - THCS Lê Lợi</title>
+
+  <!-- TailwindCSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Phong cách tổng thể -->
   <style>
-    body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; }
-    .container-max { max-width: 1200px; margin: 0 auto; }
-    .card { background: white; border-radius: .5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    input, textarea, button { font-size: 14px; }
-    .banner-text { opacity: 0; transform: translateY(30px); transition: all 1s ease; }
-    .banner-loaded .banner-text { opacity: 1; transform: translateY(0); }
+    /* Font và giao diện chung */
+    body {
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background-color: #f3f4f6;
+    }
+
+    .container-max {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    input, textarea, button {
+      font-size: 14px;
+    }
+
+    /* Hiệu ứng banner */
+    .banner-text {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 1s ease;
+    }
+
+    .banner-loaded .banner-text {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Nút Zalo nổi */
+    .zalo-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #0084FF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .zalo-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .zalo-button img {
+      width: 35px;
+      height: 35px;
+    }
   </style>
 </head>
-<body class="bg-gray-100">
-  <!-- Banner -->
+<body>
+
+  <!-- ======== BANNER ======== -->
   <header class="relative overflow-hidden">
     <img src="https://i.ibb.co/Vctvnb5J/Th-m-n-i-dung-v-n-b-n-1.png" 
-         alt="Banner" 
+         alt="Banner lớp 9.1" 
          class="w-full h-40 md:h-52 object-cover brightness-75">
     <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
       <div class="banner-text text-center text-white">
@@ -28,7 +87,7 @@
     </div>
   </header>
 
-  <!-- Menu -->
+  <!-- ======== MENU ======== -->
   <nav class="bg-green-600 text-white shadow-sm sticky top-0 z-40">
     <div class="container-max mx-auto px-4">
       <ul class="flex gap-6 py-3 font-semibold text-sm">
@@ -41,12 +100,12 @@
     </div>
   </nav>
 
-  <!-- Main -->
+  <!-- ======== MAIN CONTENT ======== -->
   <main class="container-max mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-[260px_1fr_240px] gap-6">
 
-    <!-- Cột trái -->
+    <!-- ==== CỘT TRÁI ==== -->
     <aside>
-      <!-- Đăng nhập -->
+      <!-- Hộp đăng nhập -->
       <div id="loginBox" class="card p-3">
         <h3 class="font-semibold text-green-700 mb-2 text-sm">🔐 Đăng nhập</h3>
         <input id="loginEmail" type="email" placeholder="Email" class="w-full border p-1.5 rounded mb-1" />
@@ -61,7 +120,7 @@
         </div>
       </div>
 
-      <!-- Đăng ký -->
+      <!-- Hộp đăng ký -->
       <div id="registerBox" class="card p-3 mt-3 hidden">
         <h3 class="font-semibold text-green-700 mb-2 text-sm">📝 Đăng ký tài khoản</h3>
         <input id="regName" type="text" placeholder="Họ và tên" class="w-full border p-1.5 rounded mb-1" />
@@ -88,7 +147,7 @@
       </div>
     </aside>
 
-    <!-- Cột giữa -->
+    <!-- ==== CỘT GIỮA ==== -->
     <section class="space-y-6">
       <!-- Tin tức -->
       <div id="thongbao" class="card p-4">
@@ -99,9 +158,12 @@
       <!-- Form góp ý -->
       <div id="gopy" class="card p-4">
         <h2 class="text-lg font-bold text-green-700 mb-3">💬 Form góp ý</h2>
-        <p class="text-sm text-gray-600 mb-2">Các bạn có thể gửi ý kiến, phản hồi hoặc đóng góp cho lớp. Nội dung sẽ hiển thị công khai dưới đây.</p>
+        <p class="text-sm text-gray-600 mb-2">
+          Các bạn có thể gửi ý kiến, phản hồi hoặc đóng góp cho lớp. 
+          Nội dung sẽ hiển thị công khai dưới đây.
+        </p>
         <textarea id="gopyText" rows="3" placeholder="Nhập nội dung góp ý..." class="w-full border rounded p-2 text-sm"></textarea>
-        <button onclick="sendGopy()" id="btnGopy" class="mt-2 bg-green-600 text-white px-4 py-1.5 rounded text-sm">Gửi góp ý</button>
+        <button onclick="sendGopy()" class="mt-2 bg-green-600 text-white px-4 py-1.5 rounded text-sm">Gửi góp ý</button>
         <div id="gopyList" class="mt-4 text-sm space-y-2"></div>
       </div>
 
@@ -113,7 +175,7 @@
       </div>
     </section>
 
-    <!-- Cột phải -->
+    <!-- ==== CỘT PHẢI ==== -->
     <aside>
       <div class="card p-3 text-sm">
         <h3 class="font-semibold text-green-700 mb-2">Thông báo nhanh</h3>
@@ -133,16 +195,23 @@
     </aside>
   </main>
 
+  <!-- ======== FOOTER ======== -->
   <footer class="container-max mx-auto px-4 py-4 text-center text-xs text-gray-600">
-    © 2025 Lớp 9.1 - THCS Lê Lợi — Thiết kế bởi THIÊN VŨ
+    © 2025 Lớp 9.1 - THCS Lê Lợi — Thiết kế bởi <b>THIÊN VŨ</b>
   </footer>
 
-  <!-- Firebase Script -->
+  <!-- ======== NÚT ZALO NỔI ======== -->
+  <a href="https://zalo.me/0868670473" target="_blank" class="zalo-button" title="Chat qua Zalo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" alt="Zalo">
+  </a>
+
+  <!-- ======== FIREBASE SCRIPT ======== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, addDoc, collection, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    // Cấu hình Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDpFxMdzcS_X5upNyf2tOnt4Nx95UH7e1I",
       authDomain: "tracuuthcs-leloi.firebaseapp.com",
@@ -157,7 +226,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // === Đăng ký / đăng nhập ===
+    // ==== Đăng ký / đăng nhập ====
     window.toggleRegisterForm = function() {
       registerBox.classList.toggle("hidden");
       loginBox.classList.toggle("hidden");
@@ -195,14 +264,12 @@
         loggedBox.classList.remove("hidden");
         loggedInfo.innerHTML = `Xin chào <b>${snap.data().name}</b>`;
         localStorage.setItem("userName", snap.data().name);
-        localStorage.setItem("userUID", userCred.user.uid);
       } catch (e) { alert("Lỗi: " + e.message); }
     };
 
     window.doLogout = async function() {
       await signOut(auth);
       localStorage.removeItem("userName");
-      localStorage.removeItem("userUID");
       alert("Đã đăng xuất!");
       loggedBox.classList.add("hidden");
       loginBox.classList.remove("hidden");
@@ -215,23 +282,13 @@
       alert("Đã gửi link khôi phục mật khẩu!");
     };
 
-    // === Form góp ý ===
+    // ==== Form góp ý ====
     window.sendGopy = async function() {
       const text = gopyText.value.trim();
-      const name = localStorage.getItem("userName");
-      const uid = localStorage.getItem("userUID");
-
-      if (!uid || !name) {
-        alert("Vui lòng đăng nhập để gửi góp ý!");
-        return;
-      }
-      if (!text) {
-        alert("Vui lòng nhập nội dung góp ý!");
-        return;
-      }
-
+      const name = localStorage.getItem("userName") || "Ẩn danh";
+      if (!text) return alert("Vui lòng nhập nội dung góp ý!");
       await addDoc(collection(db, "gopy"), {
-        uid, name, text, time: serverTimestamp()
+        name, text, time: serverTimestamp()
       });
       gopyText.value = "";
     };
@@ -243,14 +300,11 @@
       snap.forEach(doc => {
         const d = doc.data();
         const time = d.time ? new Date(d.time.seconds * 1000).toLocaleString("vi-VN") : "";
-        gopyList.innerHTML += `
-          <div class='p-2 border rounded bg-gray-50'>
-            <b class="text-green-700">${d.name}</b>: ${d.text}
-            <div class='text-xs text-gray-500 mt-1'>${time}</div>
-          </div>`;
+        gopyList.innerHTML += `<div class='p-2 border rounded'><b>${d.name}</b>: ${d.text}<div class='text-xs text-gray-500 mt-1'>${time}</div></div>`;
       });
     });
 
+    // Hiệu ứng banner
     window.addEventListener("load", () => {
       document.querySelector("header").classList.add("banner-loaded");
     });
