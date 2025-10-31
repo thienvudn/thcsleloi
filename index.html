@@ -15,18 +15,19 @@
   </style>
 </head>
 <body class="bg-gray-100">
+
   <!-- Banner -->
-<header class="relative overflow-hidden">
-  <img src="https://i.ibb.co/Vctvnb5J/Th-m-n-i-dung-v-n-b-n-1.png" 
-       alt="Banner" 
-       class="w-full h-40 md:h-52 object-cover brightness-75">
-  <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-    <div class="banner-text text-center text-white">
-      <h1 class="text-2xl md:text-3xl font-bold drop-shadow-lg">TRƯỜNG THCS LÊ LỢI</h1>
-      <p class="text-sm md:text-base opacity-90">XÃ THĂNG PHÚ - TP ĐÀ NẴNG</p>
+  <header class="relative overflow-hidden">
+    <img src="https://i.ibb.co/Vctvnb5J/Th-m-n-i-dung-v-n-b-n-1.png" 
+         alt="Banner" 
+         class="w-full h-40 md:h-52 object-cover brightness-75">
+    <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+      <div class="banner-text text-center text-white">
+        <h1 class="text-2xl md:text-3xl font-bold drop-shadow-lg">TRƯỜNG THCS LÊ LỢI</h1>
+        <p class="text-sm md:text-base opacity-90">XÃ THĂNG PHÚ - TP ĐÀ NẴNG</p>
+      </div>
     </div>
-  </div>
-</header>
+  </header>
 
   <!-- Menu -->
   <nav class="bg-green-600 text-white shadow-sm sticky top-0 z-40">
@@ -43,7 +44,7 @@
   <!-- Main -->
   <main class="container-max mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-[260px_1fr_240px] gap-6">
 
-    <!-- Cột trái: Đăng nhập / Đăng ký -->
+    <!-- Cột trái -->
     <aside>
       <!-- Đăng nhập -->
       <div id="loginBox" class="card p-3">
@@ -76,6 +77,7 @@
         <button onclick="doLogout()" class="w-full bg-red-500 text-white py-1.5 rounded">Đăng xuất</button>
       </div>
 
+      <!-- Liên kết nhanh -->
       <div class="card p-3 mt-3 text-sm">
         <h4 class="font-semibold text-green-700 mb-2">Liên kết nhanh</h4>
         <ul class="space-y-1">
@@ -84,13 +86,28 @@
           <li><a href="#" class="text-blue-600 hover:underline">Form góp ý</a></li>
         </ul>
       </div>
+
+      <!-- Form góp ý -->
+      <div id="feedbackBox" class="card p-3 mt-3 text-sm hidden">
+        <h4 class="font-semibold text-green-700 mb-2">💬 Form góp ý</h4>
+        <textarea id="feedbackInput" rows="3" placeholder="Nhập nội dung góp ý..." class="w-full border rounded p-2 text-sm mb-2"></textarea>
+        <button onclick="sendFeedback()" class="w-full bg-green-600 text-white py-1.5 rounded text-sm">Gửi góp ý</button>
+      </div>
     </aside>
 
-    <!-- Giữa: Thông báo -->
+    <!-- Giữa -->
     <section id="thongbao" class="card p-4">
       <h2 class="text-lg font-bold text-green-700 mb-3">📢 Tin tức - Thông báo</h2>
       <div id="newsList" class="space-y-3 text-sm">
         <div class="text-gray-500">Đang tải tin...</div>
+      </div>
+    </section>
+
+    <!-- Hiển thị góp ý -->
+    <section id="feedbackList" class="card p-4 mt-4">
+      <h2 class="text-lg font-bold text-green-700 mb-3">🗒️ Góp ý của học sinh</h2>
+      <div id="feedbackContainer" class="space-y-3 text-sm text-gray-700">
+        <div class="text-gray-500">Chưa có góp ý nào.</div>
       </div>
     </section>
 
@@ -120,8 +137,12 @@
   <!-- Firebase Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { 
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { 
+      getFirestore, doc, setDoc, getDoc, getDocs, collection 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDpFxMdzcS_X5upNyf2tOnt4Nx95UH7e1I",
@@ -204,6 +225,7 @@
       alert("Đã đăng xuất!");
       loggedBox.classList.add("hidden");
       loginBox.classList.remove("hidden");
+      document.getElementById("feedbackBox").classList.add("hidden");
     };
 
     // Quên mật khẩu
@@ -213,6 +235,63 @@
       await sendPasswordResetEmail(auth, email);
       alert("Đã gửi link khôi phục mật khẩu!");
     };
+
+    // Gửi góp ý
+    window.sendFeedback = async function() {
+      const content = document.getElementById("feedbackInput").value.trim();
+      if (!content) return alert("Vui lòng nhập nội dung góp ý!");
+      try {
+        const user = auth.currentUser;
+        if (!user) return alert("Bạn cần đăng nhập để gửi góp ý!");
+        const ref = doc(db, "users", user.uid);
+        const snap = await getDoc(ref);
+        const name = snap.exists() ? snap.data().name : "Học sinh ẩn danh";
+        const feedbackRef = doc(db, "feedbacks", `${Date.now()}_${user.uid}`);
+        await setDoc(feedbackRef, {
+          name,
+          content,
+          time: new Date()
+        });
+        document.getElementById("feedbackInput").value = "";
+        loadFeedbacks();
+        alert("Đã gửi góp ý!");
+      } catch (e) { alert("Lỗi: " + e.message); }
+    };
+
+    // Tải danh sách góp ý
+    async function loadFeedbacks() {
+      const container = document.getElementById("feedbackContainer");
+      const snap = await getDocs(collection(db, "feedbacks"));
+      if (snap.empty) {
+        container.innerHTML = "<div class='text-gray-500'>Chưa có góp ý nào.</div>";
+        return;
+      }
+      container.innerHTML = "";
+      snap.forEach(docSnap => {
+        const d = docSnap.data();
+        const date = d.time?.seconds ? new Date(d.time.seconds * 1000).toLocaleString("vi-VN") : "";
+        container.innerHTML += `
+          <div class="border-b pb-2">
+            <div class="font-semibold text-green-700">${d.name}</div>
+            <div class="text-gray-700">${d.content}</div>
+            <div class="text-xs text-gray-400">${date}</div>
+          </div>`;
+      });
+    }
+
+    // Theo dõi trạng thái đăng nhập
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        loggedBox.classList.remove("hidden");
+        loginBox.classList.add("hidden");
+        document.getElementById("feedbackBox").classList.remove("hidden");
+        loadFeedbacks();
+      } else {
+        loggedBox.classList.add("hidden");
+        loginBox.classList.remove("hidden");
+        document.getElementById("feedbackBox").classList.add("hidden");
+      }
+    });
 
     // Hiệu ứng banner
     window.addEventListener("load", () => {
