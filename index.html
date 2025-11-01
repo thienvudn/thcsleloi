@@ -71,6 +71,19 @@
       margin: 0;
       padding: 2px 0;
     }
+
+    /* Danh sách thành viên styling */
+    #memberList p {
+      margin: 0;
+      padding: 6px 0;
+      border-bottom: 1px dashed #e5e7eb;
+    }
+    #memberList p:last-child { border-bottom: none; }
+
+    /* Small responsive tweaks */
+    @media (max-width: 1024px) {
+      .container-max { padding-left: 12px; padding-right: 12px; }
+    }
   </style>
 </head>
 <body>
@@ -92,11 +105,12 @@
   <nav class="bg-green-600 text-white shadow-sm sticky top-0 z-40">
     <div class="container-max mx-auto px-4">
       <ul class="flex gap-6 py-3 font-semibold text-sm">
-        <li><a href="#gioithieu" class="hover:underline">Giới thiệu</a></li>
-        <li><a href="#thongbao" class="hover:underline">Thông báo</a></li>
-        <li><a href="#album" class="hover:underline">Album ảnh</a></li>
-        <li><a href="#gopy" class="hover:underline">Form góp ý</a></li>
-        <li><a href="#lienhe" class="hover:underline">Liên hệ</a></li>
+        <li><a href="#gioithieu" class="hover:underline" onclick="showSection('thongbao')">Giới thiệu</a></li>
+        <li><a href="#thongbao" class="hover:underline" onclick="showSection('thongbao')">Thông báo</a></li>
+        <li><a href="#album" class="hover:underline" onclick="showSection('thongbao')">Album ảnh</a></li>
+        <li><a href="#gopy" class="hover:underline" onclick="showSection('thongbao')">Form góp ý</a></li>
+        <li><a href="#lienhe" class="hover:underline" onclick="showSection('thongbao')">Liên hệ</a></li>
+        <li><a href="#" class="hover:underline" onclick="showSection('thanhvien')">Thành viên</a></li>
         <li id="capnhatMenu" class="hidden"><a href="#" onclick="openUpdateModal()" class="hover:underline">Cập nhật thông tin</a></li>
       </ul>
     </div>
@@ -160,6 +174,12 @@
       <div id="thongbao" class="card p-4">
         <h2 class="text-lg font-bold text-green-700 mb-3">📢 Tin tức - Thông báo</h2>
         <div id="newsList" class="space-y-3 text-sm text-gray-500">Đang trong quá trình hoàn thiện...</div>
+      </div>
+
+      <!-- Danh sách thành viên (ẩn mặc định) -->
+      <div id="thanhvien" class="card p-4 hidden">
+        <h2 class="text-lg font-bold text-green-700 mb-3">📋 Danh sách thành viên lớp 9/1</h2>
+        <div id="memberList" class="space-y-1 text-sm text-gray-700">Đang tải danh sách...</div>
       </div>
 
       <div class="card p-4">
@@ -230,7 +250,7 @@
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { 
       getFirestore, doc, setDoc, getDoc, addDoc, deleteDoc, collection, 
-      serverTimestamp, onSnapshot, query, orderBy 
+      serverTimestamp, onSnapshot, query, orderBy, getDocs 
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -388,6 +408,57 @@
       closeUpdateModal();
     };
 
+    // --- LOAD MEMBERS FROM FIRESTORE ---
+    async function loadMembers() {
+      try {
+        const memberListEl = document.getElementById('memberList');
+        memberListEl.innerHTML = "<p>⏳ Đang tải danh sách thành viên...</p>";
+        const snap = await getDocs(collection(db, "users"));
+        if (snap.empty) {
+          memberListEl.innerHTML = "<p>Chưa có thành viên nào đăng ký.</p>";
+          return;
+        }
+        let i = 1;
+        let html = "";
+        snap.forEach(docu => {
+          const d = docu.data();
+          const displayName = d.name && d.name.trim() !== "" ? d.name : (d.email || "Không rõ");
+          html += `<p>${i++}. ${escapeHtml(displayName)}</p>`;
+        });
+        memberListEl.innerHTML = html;
+      } catch (err) {
+        document.getElementById('memberList').innerHTML = `<p>Lỗi khi tải danh sách: ${err.message}</p>`;
+        console.error("loadMembers error:", err);
+      }
+    }
+
+    // Escape HTML to avoid injection (simple)
+    function escapeHtml(str) {
+      if (!str) return "";
+      return str.replace(/[&<>"']/g, function(m) {
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m];
+      });
+    }
+
+    // --- CHUYỂN HIển THỊ GIỮA THÔNG BÁO VÀ THÀNH VIÊN ---
+    window.showSection = function(section) {
+      const thongbao = document.getElementById('thongbao');
+      const thanhvien = document.getElementById('thanhvien');
+
+      if (section === 'thanhvien' || section === 'members') {
+        // ẩn thông báo, hiện danh sách thành viên
+        if (thongbao) thongbao.classList.add('hidden');
+        if (thanhvien) {
+          thanhvien.classList.remove('hidden');
+          loadMembers();
+        }
+      } else {
+        // hiện thông báo, ẩn danh sách thành viên
+        if (thanhvien) thanhvien.classList.add('hidden');
+        if (thongbao) thongbao.classList.remove('hidden');
+      }
+    };
+
     // --- KHỞI TẠO ---
     window.addEventListener("load", () => {
       document.body.classList.add("banner-loaded");
@@ -400,6 +471,9 @@
       }
       checkFormVisibility();
     });
+
+    // --- Các hàm giữ nguyên trong file gốc đã có ở trên (đã chèn, không thay đổi) ---
+    // (Đoạn code gốc bạn cung cấp vẫn được giữ nguyên; mình chỉ bổ sung hàm loadMembers, escapeHtml và showSection)
   </script>
 </body>
 </html>
