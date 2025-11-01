@@ -30,7 +30,7 @@
       display: none; align-items: center; justify-content: center; z-index: 10000;
     }
 
-    /* Dòng chữ chạy bên dưới banner */
+    /* Dòng chữ chạy bên dưới menu */
     .banner-marquee {
       position: relative;
       overflow: hidden;
@@ -51,7 +51,11 @@
       100% { transform: translateX(-100%); }
     }
 
-    /* Marquee vertical thông báo nhanh */
+    /* Marquee vertical thông báo nhanh (chạy từ dưới lên, lặp lại) */
+    #thongbaoContent {
+      position: absolute;
+      width: 100%;
+    }
     #thongbaoContent p {
       margin: 0;
       padding: 2px 0;
@@ -70,9 +74,6 @@
         <h1 class="text-2xl md:text-3xl font-bold drop-shadow-lg">LỚP 9/1 TRƯỜNG THCS LÊ LỢI</h1>
         <p class="text-sm md:text-base opacity-90">XÃ THĂNG PHÚ - TP ĐÀ NẴNG</p>
       </div>
-      <div class="banner-marquee w-full mt-2">
-        <span>Chào mừng bạn đến với website của lớp 9/1 Trường THCS Lê Lợi - Xã Thăng Phú - Thành Phố Đà Nẵng</span>
-      </div>
     </div>
   </header>
 
@@ -89,6 +90,11 @@
       </ul>
     </div>
   </nav>
+
+  <!-- ======== CHỮ CHẠY DƯỚI MENU ======== -->
+  <div class="banner-marquee w-full">
+    <span>Chào mừng bạn đến với website của lớp 9/1 Trường THCS Lê Lợi - Xã Thăng Phú - Thành Phố Đà Nẵng</span>
+  </div>
 
   <!-- ======== MAIN ======== -->
   <main class="container-max mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-[260px_1fr_240px] gap-6">
@@ -156,15 +162,15 @@
       <div class="card p-3 text-sm">
         <h3 class="font-semibold text-green-700 mb-2">Thông báo nhanh</h3>
 
-       <!-- File Word đầu tiên -->
-<a href="https://drive.google.com/uc?export=download&id=1hFk7S22K037r1espR1na2S45bGm-OTfS"
-   class="mb-2 block bg-blue-600 text-white px-3 py-1.5 rounded text-sm hover:bg-blue-700">
-  📄 Lịch thi giữa học kỳ 1
-</a>
+        <!-- File Word đầu tiên -->
+        <a href="https://drive.google.com/uc?export=download&id=1hFk7S22K037r1espR1na2S45bGm-OTfS"
+           class="mb-2 block bg-blue-600 text-white px-3 py-1.5 rounded text-sm hover:bg-blue-700">
+          📄 Lịch thi giữa học kỳ 1
+        </a>
 
         <!-- Marquee vertical các thông báo -->
         <div class="overflow-hidden h-20 relative" id="thongbaoMarquee">
-          <div id="thongbaoContent" class="absolute top-0 left-0 w-full">
+          <div id="thongbaoContent">
             <p>✔ Công bố lịch thi học kỳ</p>
             <p>✔ Họp phụ huynh lớp</p>
             <p>✔ Nộp bài tập cuối tuần</p>
@@ -297,92 +303,75 @@
       checkFormVisibility();
     };
 
-    // --- CHUYỂN GIỮA LOGIN/REGISTER ---
-    window.toggleRegisterForm = function() {
-      registerBox.classList.toggle("hidden");
-      loginBox.classList.toggle("hidden");
-    };
-
-    // --- KIỂM TRA FORM GÓP Ý ---
-    function checkFormVisibility() {
-      const email = localStorage.getItem("userEmail");
-      if (email) {
-        gopyFormArea.classList.remove("hidden");
-        loginToComment.classList.add("hidden");
-      } else {
-        gopyFormArea.classList.add("hidden");
-        loginToComment.classList.remove("hidden");
-      }
-    }
-
-    // --- GỬI GÓP Ý ---
+    // --- GÓP Ý ---
     window.sendGopy = async function() {
       const text = gopyText.value.trim();
-      const email = localStorage.getItem("userEmail");
-      if (!email) return alert("Vui lòng đăng nhập!");
-      if (!text) return alert("Vui lòng nhập nội dung góp ý!");
-      await addDoc(collection(db, "gopy"), { email, text, time: serverTimestamp() });
+      if (!currentUser || !text) return alert("Vui lòng đăng nhập và nhập nội dung góp ý.");
+      await addDoc(collection(db, "gopy"), {
+        user: currentUser.email, content: text, time: serverTimestamp()
+      });
       gopyText.value = "";
+      alert("Gửi góp ý thành công!");
     };
 
-    // --- REALTIME GÓP Ý ---
+    // --- LOAD DANH SÁCH GÓP Ý ---
     const q = query(collection(db, "gopy"), orderBy("time", "desc"));
-    onSnapshot(q, (snap) => {
+    onSnapshot(q, snap => {
       gopyList.innerHTML = "";
-      snap.forEach(docu => {
-        const d = docu.data();
-        const time = d.time ? new Date(d.time.seconds * 1000).toLocaleString("vi-VN") : "";
-        let del = "";
-        if (localStorage.getItem("userEmail") === adminEmail)
-          del = `<button onclick="deleteGopy('${docu.id}')" class='ml-2 text-red-500 text-xs'>🗑 Xóa</button>`;
-        gopyList.innerHTML += `
-          <div class='p-2 border rounded'>
-            <b>${d.email}</b>: ${d.text}
-            <div class='text-xs text-gray-500 mt-1'>${time}${del}</div>
-          </div>`;
+      snap.forEach(doc => {
+        const d = doc.data();
+        const date = d.time?.toDate().toLocaleString("vi-VN") || "";
+        gopyList.innerHTML += `<div class='border-b pb-1'><b>${d.user}</b>: ${d.content}<br><span class='text-xs text-gray-400'>${date}</span></div>`;
       });
     });
 
-    // --- XÓA GÓP Ý (ADMIN) ---
-    window.deleteGopy = async function(id) {
-      if (confirm("Xóa góp ý này?")) await deleteDoc(doc(db, "gopy", id));
-    };
-
-    // --- FORM CẬP NHẬT THÔNG TIN ---
-    window.openUpdateModal = () => updateModal.style.display = "flex";
-    window.closeUpdateModal = () => updateModal.style.display = "none";
-    window.saveUserInfo = async function() {
-      const email = localStorage.getItem("userEmail");
-      if (!email) return alert("Vui lòng đăng nhập!");
-      const ref = doc(db, "users", auth.currentUser.uid);
-      await setDoc(ref, {
-        name: upName.value,
-        phone: upPhone.value,
-        birth: upBirth.value,
-        address: upAddress.value
-      }, { merge: true });
+    // --- CẬP NHẬT THÔNG TIN ---
+    window.openUpdateModal = function(){ updateModal.style.display = "flex"; };
+    window.closeUpdateModal = function(){ updateModal.style.display = "none"; };
+    window.saveUserInfo = async function(){
+      if (!currentUser) return alert("Vui lòng đăng nhập!");
+      const info = {
+        name: upName.value.trim(), phone: upPhone.value.trim(),
+        birth: upBirth.value.trim(), address: upAddress.value.trim(),
+        updated: new Date()
+      };
+      await setDoc(doc(db, "users", currentUser.uid), info, { merge: true });
       alert("Đã lưu thông tin!");
       closeUpdateModal();
     };
 
-    // --- GIAO DIỆN ---
+    // --- HIỂN THỊ FORM GÓP Ý KHI LOGIN ---
+    function checkFormVisibility() {
+      if (currentUser) { gopyFormArea.classList.remove("hidden"); loginToComment.classList.add("hidden"); }
+      else { gopyFormArea.classList.add("hidden"); loginToComment.classList.remove("hidden"); }
+    }
+
+    // --- AUTO LOGIN ---
     window.onload = () => {
-      document.querySelector("header").classList.add("banner-loaded");
-      checkFormVisibility();
+      const savedEmail = localStorage.getItem("savedEmail");
+      const savedPass = localStorage.getItem("savedPass");
+      if (savedEmail && savedPass) {
+        loginEmail.value = savedEmail;
+        loginPass.value = savedPass;
+      }
+      setTimeout(() => document.querySelector("header").classList.add("banner-loaded"), 500);
+    };
 
-      // --- ĐIỀN THÔNG TIN LƯU TRONG LOCALSTORAGE ---
-      if (localStorage.getItem("savedEmail")) loginEmail.value = localStorage.getItem("savedEmail");
-      if (localStorage.getItem("savedPass")) loginPass.value = localStorage.getItem("savedPass");
-      if (localStorage.getItem("savedEmail") && localStorage.getItem("savedPass")) rememberMe.checked = true;
+    // --- Marquee dọc chạy từ dưới lên ---
+    const marqueeBox = document.getElementById("thongbaoMarquee");
+    const content = document.getElementById("thongbaoContent");
+    let y = marqueeBox.offsetHeight;
+    function scrollUp() {
+      y -= 1;
+      if (y < -content.offsetHeight) y = marqueeBox.offsetHeight;
+      content.style.transform = `translateY(${y}px)`;
+      requestAnimationFrame(scrollUp);
+    }
+    scrollUp();
 
-      // --- MARQUEE VERTICAL THÔNG BÁO NHANH ---
-      const marquee = document.getElementById('thongbaoContent');
-      let top = 0;
-      setInterval(() => {
-        top -= 1;
-        if (top <= -marquee.scrollHeight / 2) top = 0;
-        marquee.style.top = top + "px";
-      }, 100);
+    window.toggleRegisterForm = function(){
+      registerBox.classList.toggle("hidden");
+      loginBox.classList.toggle("hidden");
     };
   </script>
 </body>
