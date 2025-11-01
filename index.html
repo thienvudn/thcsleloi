@@ -89,6 +89,13 @@
         <h3 class="font-semibold text-green-700 mb-2 text-sm">🔐 Đăng nhập</h3>
         <input id="loginEmail" type="email" placeholder="Email" class="w-full border p-1.5 rounded mb-1" />
         <input id="loginPass" type="password" placeholder="Mật khẩu" class="w-full border p-1.5 rounded mb-2" />
+        
+        <!-- ====== Ô TÍCH LƯU THÔNG TIN ĐĂNG NHẬP ====== -->
+        <div class="flex items-center text-sm mb-2">
+          <input type="checkbox" id="rememberMe" class="mr-2">
+          <label for="rememberMe">Lưu thông tin đăng nhập</label>
+        </div>
+
         <button onclick="doLogin()" class="w-full bg-green-600 text-white py-1.5 rounded text-sm">Đăng nhập</button>
         <div class="flex justify-between text-xs mt-2">
           <button onclick="toggleRegisterForm()" class="text-gray-600 underline">Đăng ký tài khoản mới</button>
@@ -232,6 +239,16 @@
           return alert("Tài khoản chưa được admin duyệt!");
         }
         currentUser = userCred.user;
+
+        // --- Lưu thông tin đăng nhập nếu tick ---
+        if (rememberMe.checked) {
+          localStorage.setItem("savedEmail", loginEmail.value);
+          localStorage.setItem("savedPass", loginPass.value);
+        } else {
+          localStorage.removeItem("savedEmail");
+          localStorage.removeItem("savedPass");
+        }
+
         localStorage.setItem("userEmail", currentUser.email);
         loginBox.classList.add("hidden");
         loggedBox.classList.remove("hidden");
@@ -256,8 +273,8 @@
       await signOut(auth);
       currentUser = null;
       localStorage.removeItem("userEmail");
-      loggedBox.classList.add("hidden");
       loginBox.classList.remove("hidden");
+      loggedBox.classList.add("hidden");
       capnhatMenu.classList.add("hidden");
       checkFormVisibility();
     };
@@ -334,6 +351,13 @@
     window.onload = () => {
       document.querySelector("header").classList.add("banner-loaded");
       checkFormVisibility();
+
+      // --- Tự điền login nếu đã lưu ---
+      if (localStorage.getItem("savedEmail")) {
+        loginEmail.value = localStorage.getItem("savedEmail");
+        loginPass.value = localStorage.getItem("savedPass") || "";
+        rememberMe.checked = true;
+      }
     };
   </script>
 </body>
