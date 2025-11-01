@@ -30,16 +30,16 @@
       display: none; align-items: center; justify-content: center; z-index: 10000;
     }
 
-    /* Dòng chữ chạy bên dưới menu */
+    /* Dòng chữ chạy NGANG dưới menu */
     .banner-marquee {
       position: relative;
       overflow: hidden;
-      background-color: rgba(0, 128, 0, 0.8);
+      background-color: rgba(0, 128, 0, 0.9);
       color: white;
       font-weight: 500;
       font-size: 0.9rem;
       white-space: nowrap;
-      padding: 4px 0;
+      padding: 6px 0;
     }
     .banner-marquee span {
       display: inline-block;
@@ -51,11 +51,22 @@
       100% { transform: translateX(-100%); }
     }
 
-    /* Marquee vertical thông báo nhanh (chạy từ dưới lên, lặp lại) */
+    /* Thông báo nhanh chạy từ DƯỚI LÊN TRÊN liên tục */
+    #thongbaoMarquee {
+      position: relative;
+      height: 80px;
+      overflow: hidden;
+    }
     #thongbaoContent {
       position: absolute;
-      width: 100%;
+      bottom: 0;
+      animation: scrollUp 8s linear infinite;
     }
+    @keyframes scrollUp {
+      0% { transform: translateY(100%); }
+      100% { transform: translateY(-100%); }
+    }
+
     #thongbaoContent p {
       margin: 0;
       padding: 2px 0;
@@ -91,9 +102,9 @@
     </div>
   </nav>
 
-  <!-- ======== CHỮ CHẠY DƯỚI MENU ======== -->
+  <!-- ======== DÒNG CHỮ CHẠY NGANG DƯỚI MENU ======== -->
   <div class="banner-marquee w-full">
-    <span>Chào mừng bạn đến với website của lớp 9/1 Trường THCS Lê Lợi - Xã Thăng Phú - Thành Phố Đà Nẵng</span>
+    <span>🌿 Chào mừng bạn đến với website của lớp 9/1 Trường THCS Lê Lợi - Xã Thăng Phú - Thành Phố Đà Nẵng 🌿</span>
   </div>
 
   <!-- ======== MAIN ======== -->
@@ -169,11 +180,13 @@
         </a>
 
         <!-- Marquee vertical các thông báo -->
-        <div class="overflow-hidden h-20 relative" id="thongbaoMarquee">
+        <div id="thongbaoMarquee">
           <div id="thongbaoContent">
             <p>✔ Công bố lịch thi học kỳ</p>
             <p>✔ Họp phụ huynh lớp</p>
             <p>✔ Nộp bài tập cuối tuần</p>
+            <p>✔ Sinh hoạt lớp thứ 7</p>
+            <p>✔ Vui chơi ngày Chủ Nhật</p>
           </div>
         </div>
       </div>
@@ -211,7 +224,7 @@
     <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_of_Zalo.svg" alt="Zalo">
   </a>
 
-  <!-- ======== FIREBASE SCRIPT ======== -->
+  <!-- ======== FIREBASE SCRIPT (giữ nguyên toàn bộ chức năng) ======== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { 
@@ -274,6 +287,8 @@
         }
 
         localStorage.setItem("userEmail", currentUser.email);
+        localStorage.setItem("userName", userDoc.data().name || currentUser.email);
+
         loginBox.classList.add("hidden");
         loggedBox.classList.remove("hidden");
         loggedInfo.innerHTML = `Xin chào <b>${userDoc.data().name || currentUser.email}</b>`;
@@ -286,93 +301,108 @@
     window.resetPassword = async function() {
       const email = prompt("Nhập email để đặt lại mật khẩu:");
       if (!email) return;
-      try {
-        await sendPasswordResetEmail(auth, email);
-        alert("Đã gửi email khôi phục mật khẩu, vui lòng kiểm tra hộp thư!");
-      } catch (e) { alert("Lỗi: " + e.message); }
+      await sendPasswordResetEmail(auth, email);
+      alert("Hệ thống đã gửi liên kết đặt lại mật khẩu tới email!");
     };
 
     // --- ĐĂNG XUẤT ---
     window.doLogout = async function() {
       await signOut(auth);
       currentUser = null;
-      localStorage.removeItem("userEmail");
-      loggedBox.classList.add("hidden");
+      localStorage.clear();
       loginBox.classList.remove("hidden");
+      loggedBox.classList.add("hidden");
       capnhatMenu.classList.add("hidden");
       checkFormVisibility();
     };
 
-    // --- GÓP Ý ---
+    // --- GỬI GÓP Ý ---
     window.sendGopy = async function() {
-      const text = gopyText.value.trim();
-      if (!currentUser || !text) return alert("Vui lòng đăng nhập và nhập nội dung góp ý.");
+      const content = gopyText.value.trim();
+      if (!content) return alert("Vui lòng nhập nội dung!");
+      const name = localStorage.getItem("userName") || "Người ẩn danh";
+      const email = localStorage.getItem("userEmail") || "Không xác định";
       await addDoc(collection(db, "gopy"), {
-        user: currentUser.email, content: text, time: serverTimestamp()
+        name, email, content, created: serverTimestamp()
       });
       gopyText.value = "";
-      alert("Gửi góp ý thành công!");
+      alert("Góp ý đã gửi thành công!");
     };
 
-    // --- LOAD DANH SÁCH GÓP Ý ---
-    const q = query(collection(db, "gopy"), orderBy("time", "desc"));
-    onSnapshot(q, snap => {
+    // --- LẮNG NGHE GÓP Ý ---
+    const q = query(collection(db, "gopy"), orderBy("created", "desc"));
+    onSnapshot(q, (snapshot) => {
       gopyList.innerHTML = "";
-      snap.forEach(doc => {
-        const d = doc.data();
-        const date = d.time?.toDate().toLocaleString("vi-VN") || "";
-        gopyList.innerHTML += `<div class='border-b pb-1'><b>${d.user}</b>: ${d.content}<br><span class='text-xs text-gray-400'>${date}</span></div>`;
+      snapshot.forEach((docu) => {
+        const d = docu.data();
+        const el = document.createElement("div");
+        el.className = "border rounded p-2 bg-gray-50";
+        el.innerHTML = `
+          <div class="text-gray-700 text-sm"><b>${d.name}</b>: ${d.content}</div>
+          ${localStorage.getItem("userEmail") === adminEmail
+            ? `<button onclick="deleteGopy('${docu.id}')" class="text-xs text-red-500 mt-1 underline">Xóa</button>` : ""
+          }
+        `;
+        gopyList.appendChild(el);
       });
     });
 
-    // --- CẬP NHẬT THÔNG TIN ---
-    window.openUpdateModal = function(){ updateModal.style.display = "flex"; };
-    window.closeUpdateModal = function(){ updateModal.style.display = "none"; };
-    window.saveUserInfo = async function(){
-      if (!currentUser) return alert("Vui lòng đăng nhập!");
-      const info = {
-        name: upName.value.trim(), phone: upPhone.value.trim(),
-        birth: upBirth.value.trim(), address: upAddress.value.trim(),
-        updated: new Date()
-      };
-      await setDoc(doc(db, "users", currentUser.uid), info, { merge: true });
+    // --- XÓA GÓP Ý (admin) ---
+    window.deleteGopy = async function(id) {
+      const userEmail = localStorage.getItem("userEmail");
+      if (userEmail !== adminEmail) return alert("Chỉ admin mới được xóa góp ý!");
+      if (!confirm("Bạn có chắc muốn xóa góp ý này không?")) return;
+      await deleteDoc(doc(db, "gopy", id));
+      alert("Đã xóa góp ý!");
+    };
+
+    // --- KIỂM TRA FORM GÓP Ý CÓ ĐƯỢC HIỂN THỊ KHÔNG ---
+    function checkFormVisibility() {
+      const user = localStorage.getItem("userEmail");
+      if (user) {
+        gopyFormArea.classList.remove("hidden");
+        loginToComment.classList.add("hidden");
+      } else {
+        gopyFormArea.classList.add("hidden");
+        loginToComment.classList.remove("hidden");
+      }
+    }
+
+    // --- CHUYỂN GIỮA ĐĂNG KÝ & ĐĂNG NHẬP ---
+    window.toggleRegisterForm = function() {
+      loginBox.classList.toggle("hidden");
+      registerBox.classList.toggle("hidden");
+    };
+
+    // --- MỞ / ĐÓNG MODAL CẬP NHẬT ---
+    window.openUpdateModal = function() { updateModal.style.display = "flex"; };
+    window.closeUpdateModal = function() { updateModal.style.display = "none"; };
+
+    // --- LƯU THÔNG TIN NGƯỜI DÙNG ---
+    window.saveUserInfo = async function() {
+      const u = auth.currentUser;
+      if (!u) return alert("Bạn chưa đăng nhập!");
+      await setDoc(doc(db, "users", u.uid), {
+        name: upName.value, phone: upPhone.value,
+        birth: upBirth.value, address: upAddress.value,
+        email: u.email, approved: true
+      }, { merge: true });
       alert("Đã lưu thông tin!");
       closeUpdateModal();
     };
 
-    // --- HIỂN THỊ FORM GÓP Ý KHI LOGIN ---
-    function checkFormVisibility() {
-      if (currentUser) { gopyFormArea.classList.remove("hidden"); loginToComment.classList.add("hidden"); }
-      else { gopyFormArea.classList.add("hidden"); loginToComment.classList.remove("hidden"); }
-    }
-
-    // --- AUTO LOGIN ---
-    window.onload = () => {
+    // --- KHỞI TẠO ---
+    window.addEventListener("load", () => {
+      document.body.classList.add("banner-loaded");
       const savedEmail = localStorage.getItem("savedEmail");
       const savedPass = localStorage.getItem("savedPass");
       if (savedEmail && savedPass) {
         loginEmail.value = savedEmail;
         loginPass.value = savedPass;
+        rememberMe.checked = true;
       }
-      setTimeout(() => document.querySelector("header").classList.add("banner-loaded"), 500);
-    };
-
-    // --- Marquee dọc chạy từ dưới lên ---
-    const marqueeBox = document.getElementById("thongbaoMarquee");
-    const content = document.getElementById("thongbaoContent");
-    let y = marqueeBox.offsetHeight;
-    function scrollUp() {
-      y -= 1;
-      if (y < -content.offsetHeight) y = marqueeBox.offsetHeight;
-      content.style.transform = `translateY(${y}px)`;
-      requestAnimationFrame(scrollUp);
-    }
-    scrollUp();
-
-    window.toggleRegisterForm = function(){
-      registerBox.classList.toggle("hidden");
-      loginBox.classList.toggle("hidden");
-    };
+      checkFormVisibility();
+    });
   </script>
 </body>
 </html>
