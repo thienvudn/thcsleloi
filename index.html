@@ -29,6 +29,20 @@
       position: fixed; inset: 0; background: rgba(0,0,0,0.5);
       display: none; align-items: center; justify-content: center; z-index: 10000;
     }
+
+    /* ===== DÒNG CHỮ CHẠY ===== */
+    .marquee-container { position: relative; background-color: #16a34a; overflow: hidden; }
+    .marquee-container p {
+      display: inline-block;
+      white-space: nowrap;
+      padding-left: 100%;
+      color: white;
+      animation: marquee 20s linear infinite;
+    }
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-100%); }
+    }
   </style>
 </head>
 <body>
@@ -45,6 +59,11 @@
       </div>
     </div>
   </header>
+
+  <!-- ======== DÒNG CHỮ CHẠY BÊN DƯỚI BANNER ======== -->
+  <div class="marquee-container py-1">
+    <p>Chào mừng bạn đến với website của lớp 9/1 Trường THCS Lê Lợi - Xã Thăng Phú - Thành Phố Đà Nẵng</p>
+  </div>
 
   <!-- ======== MENU ======== -->
   <nav class="bg-green-600 text-white shadow-sm sticky top-0 z-40">
