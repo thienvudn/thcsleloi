@@ -408,7 +408,7 @@
       closeUpdateModal();
     };
 
-    // --- LOAD MEMBERS FROM FIRESTORE ---
+    // --- LOAD MEMBERS FROM FIRESTORE (giữ nguyên nhưng thêm nút xóa cho admin) ---
     async function loadMembers() {
       try {
         const memberListEl = document.getElementById('memberList');
@@ -420,10 +420,16 @@
         }
         let i = 1;
         let html = "";
+        const currentEmail = localStorage.getItem("userEmail");
         snap.forEach(docu => {
           const d = docu.data();
           const displayName = d.name && d.name.trim() !== "" ? d.name : (d.email || "Không rõ");
-          html += `<p>${i++}. ${escapeHtml(displayName)}</p>`;
+          // nếu user hiện tại là admin, hiển thị nút xóa kế bên (xóa theo uid)
+          if (currentEmail === adminEmail) {
+            html += `<p>${i++}. ${escapeHtml(displayName)} <button onclick="deleteMember('${docu.id}')" class="text-xs text-red-500 ml-2 underline">🗑 Xóa</button></p>`;
+          } else {
+            html += `<p>${i++}. ${escapeHtml(displayName)}</p>`;
+          }
         });
         memberListEl.innerHTML = html;
       } catch (err) {
@@ -431,6 +437,21 @@
         console.error("loadMembers error:", err);
       }
     }
+
+    // --- XÓA THÀNH VIÊN (ADMIN) ---
+    window.deleteMember = async function(uid) {
+      const userEmail = localStorage.getItem("userEmail");
+      if (userEmail !== adminEmail) return alert("Chỉ admin mới được phép xóa thành viên!");
+      if (!confirm("Xác nhận xóa thành viên này?")) return;
+      try {
+        await deleteDoc(doc(db, "users", uid));
+        alert("Đã xóa thành viên!");
+        loadMembers();
+      } catch (err) {
+        console.error("deleteMember error:", err);
+        alert("Xóa không thành công: " + err.message);
+      }
+    };
 
     // Escape HTML to avoid injection (simple)
     function escapeHtml(str) {
@@ -473,7 +494,7 @@
     });
 
     // --- Các hàm giữ nguyên trong file gốc đã có ở trên (đã chèn, không thay đổi) ---
-    // (Đoạn code gốc bạn cung cấp vẫn được giữ nguyên; mình chỉ bổ sung hàm loadMembers, escapeHtml và showSection)
+    // (Đoạn code gốc bạn cung cấp vẫn được giữ nguyên; mình chỉ bổ sung hàm loadMembers, deleteMember, escapeHtml và showSection)
   </script>
 </body>
 </html>
